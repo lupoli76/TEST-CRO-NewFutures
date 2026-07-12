@@ -4,13 +4,28 @@
 ╔══════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                  ║
 ║   CRO ITALIA - Central Routing Optimizer                                         ║
-║   Versione: 50.07.10                                                             ║
+║   Versione: 50.07.13                                                             ║
 ║   Data: Luglio 2026                                                              ║
 ║                                                                                  ║
 ║   Tool enterprise per ottimizzazione percorsi rete TIM                           ║
 ║   Sviluppato con Design System unificato                                         ║
 ║                                                                                  ║
 ╠══════════════════════════════════════════════════════════════════════════════════╣
+║                                                                                  ║
+║   CHANGELOG v50.07.13:                                                           ║
+║   ─────────────────────────                                                      ║
+║   • Tab "Verifica PXM": ricerca per coordinate/indirizzo Sede Cliente con        ║
+║     centrale RA/RC più vicina e 3 centrali PXM più vicine (Haversine)            ║
+║   • Tab "Verifica PXM": filtro tipo Tutti / SOLO PXM1 / SOLO PXM3 / PXM1+PXM3    ║
+║     (esclusivo, attivo su ricerca e su sfoglio elenco)                           ║
+║   • Tab "Verifica PXM": export CSV e copia appunti per centrali vicine,          ║
+║     tabella risultati e singola riga                                             ║
+║   • Tab "Verifica PXM": layout riallineato (Note = altezza box coordinate,       ║
+║     tabella a piena larghezza, 3 card info PXM su una riga)                      ║
+║   • Tab "Verifica PXM": info PXM1/PXM3 arricchite (box generico "Cosa sono le    ║
+║     PXM", requisiti scheda, nota di fattibilità SdF, note tecniche)              ║
+║   • Tab "Verifica PXM": titoli/sottotitoli e liste puntate rifiniti              ║
+║   ─────────────────────────                                                      ║
 ║                                                                                  ║
 ║   CHANGELOG v50.07.10:                                                           ║
 ║   ─────────────────────────                                                      ║
@@ -13278,13 +13293,14 @@ textarea.db-search-input {
   top: 100%;
   left: 0;
   right: 0;
-  max-height: 300px;
+  max-height: 280px;
   overflow-y: auto;
   background: white;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-200);
   border-top: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  z-index: 2000;
   display: none;
   margin-top: 0;
 }
@@ -13442,6 +13458,11 @@ textarea.db-search-input {
 .btn-chip:hover {
   border-color: var(--tim-blue);
   color: var(--tim-blue);
+}
+
+.pxm-filter-btn:hover {
+  filter: brightness(1.1);
+  opacity: 0.92;
 }
 
 
@@ -20393,7 +20414,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
   <span class="dark-mode-icon" id="darkModeIcon">🌙</span>
 </button>
 
-<div class="version-tag">V50.07.10 | Lug 2026</div>
+<div class="version-tag">V50.07.13 | Lug 2026</div>
       </div>
     </div>
   </header>
@@ -21140,29 +21161,29 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
     </svg>
   </div>
   <div class="feature-header">
-    <h3 class="feature-title" style="color: #d1008f;">🆕 Novità V50.07.10 — Lug 2026</h3>
+    <h3 class="feature-title" style="color: #d1008f;">🆕 Novità V50.07.13 — Lug 2026</h3>
     <span class="feature-badge" style="background:#fdf2f8;color:#d1008f;">Latest</span>
   </div>
   <ul style="margin:0.5rem 0 0.5rem 1rem; padding:0; font-size:0.82rem; color:var(--gray-700); line-height:1.7;">
-    <li><strong>🧩 Verifica PXM — Selezione multipla</strong>: checkbox per riga + "seleziona tutto" in intestazione, pannello Selezione con chip rimovibili e conteggio, bottone <strong>👁️ Mostra solo selezionate</strong> per filtrare la tabella sulle sole centrali scelte (selezione persistente tra ricerche diverse). Rimossa la colonna Azioni (link Google Maps/NAT) introdotta in V50.06.26.</li>
+    <li><strong>🧩 Verifica PXM — Riutilizzo DWDM Esistente</strong>: nuova ricerca per coordinate/indirizzo Sede Cliente (centrale RA/RC più vicina + 3 centrali PXM più vicine via Haversine); filtro tipo Tutti/SOLO PXM1/SOLO PXM3/PXM1+PXM3; export CSV e copia appunti (centrali vicine, tabella, singola riga); layout riallineato e info PXM1/PXM3 arricchite con nota di fattibilità SdF.</li>
   </ul>
 
   <p style="margin:0.8rem 0 0.3rem 0; font-size:0.75rem; font-weight:700; color:#7c3aed; letter-spacing:0.02em;">
-    📋 Aggiornamenti precedenti — V50.06.26 → V41.04.08
+    📋 Aggiornamenti precedenti — V50.07.10 → V41.04.08
   </p>
   <ul style="margin:0 0 0.5rem 1rem; padding:0; font-size:0.8rem; color:var(--gray-700); line-height:1.65;">
+    <li><strong>V50.07.10 — 🧩 Verifica PXM Selezione multipla</strong>: checkbox per riga + "seleziona tutto", pannello Selezione con chip rimovibili, "Mostra solo selezionate"</li>
     <li><strong>V50.06.24-26 — 🧩 NUOVO TAB Verifica PXM</strong>: ricerca centrali PXM1/PXM3 (DWDM) per CLLI/Descrizione; 3.478 record; scheda richiesta automatica (4WCC+2FO / 4WCC+4CSM); georeferenziazione Nome Sede/Comune/Lat/Long (1.845 centrali)</li>
     <li><strong>V50.06.23 — 🏢 36 Nodi A1 RTN + Badge POP</strong>: +3 A1 standard, +1 A1_DIV; badge POP geografico su 2ª riga RC/RA/Unificato; priorità A1 standard su A1_DIV</li>
     <li><strong>V50.06.15 — 🌐 RTN Unificato</strong>: routing interregionale completo (3 segmenti Std + Div Zona A/B); 36 Nodi A1; fix rendering badge RTN; cache grafo RC-only</li>
     <li><strong>V50.06.01 — 🔄 DB RA Campo Altro1</strong>: 365 record aggiornati (archi CA/CB) su indicazioni A. Imperatori</li>
     <li><strong>V41.05.12 — 🔧 FIX Tab Unificato</strong>: eliminati percorsi RA "avanti e indietro" con controllo <em>hasIntermediateT12</em></li>
-    <li><strong>V41.04.08 — 🔀 Analisi Swap</strong>: barre filtro live (8 filtri Correlazione + 6 filtri Centrali)</li>
   </ul>
 
   <div class="feature-specs">
-    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Selezione Multipla</span>
-    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Mostra Selezionate</span>
-    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Verifica PXM</span>
+    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Ricerca Coordinate</span>
+    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Filtro Tipo</span>
+    <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">Export/Copia</span>
     <span class="spec-tag" style="background:#fdf2f8;color:#d1008f;">3.478 Record</span>
     <span class="spec-tag" style="background:#f5f3ff;color:#7c3aed;">36 Nodi A1</span>
     <span class="spec-tag" style="background:#f5f3ff;color:#7c3aed;">Badge POP</span>
@@ -33103,9 +33124,9 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
 
         <div class="section-header" style="position: relative;">
           <div>
-            <h2 class="section-title">🧩 Verifica PXM</h2>
+            <h2 class="section-title">🧩 Verifica PXM — Riutilizzo DWDM Esistente</h2>
             <p class="section-subtitle">
-              Ricerca centrali dotate di scheda PXM1 o PXM3 (DWDM) • Requisiti scheda per coda cliente
+              Verifica se la centrale d'accesso ha già un DWDM attivo (PXM1/PXM3) verso il cliente e per il cliente, per evitare una nuova installazione e riutilizzare l'apparato esistente.
             </p>
           </div>
           <div style="position: absolute; right: 0; top: 0;">
@@ -33115,30 +33136,169 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
           </div>
         </div>
 
-        <!-- Box informativo requisiti scheda -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; margin-top: 1rem; margin-bottom: 1rem;">
-          <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 10px; padding: 0.9rem 1.1rem;">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">🔹 PXM1</div>
-            <div style="font-size: 0.8rem; color: #374151;">
-              Per coda cliente: installare scheda <strong>4WCC</strong> + <strong>2 FO</strong> per l'accesso.
+        <!-- LAYOUT PRINCIPALE: Pannello input + pannello note -->
+        <div class="route-layout">
+          <div class="route-input-panel">
+
+            <!-- RIGA 0: RICERCA PER COORDINATE / INDIRIZZO (stile Posizione Cliente) -->
+            <div class="route-input-grid" style="background: var(--gray-50); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0; border: 1px solid var(--gray-200); flex: 1; box-sizing: border-box; align-content: start;">
+              <div class="route-field" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;">
+                <label style="font-weight: 600; color: var(--tim-blue); font-size: 0.9rem;">📍 Ricerca per Coordinate / Indirizzo Sede Cliente</label>
+                <button class="btn btn-chip" type="button" onclick="resetPXMGeoSearch()" style="margin: 0;">🔁 Reset Campi</button>
+              </div>
+              <div class="route-field" style="grid-column: 1 / -1; margin: -0.4rem 0 0.3rem 0;">
+                <p style="font-size: 0.78rem; color: #6b7280; margin: 0;">Trova le centrali di riferimento RA e RC più vicine e le 3 centrali dove è già installata tecnologia DWDM (PXM1/PXM3) per il cliente.</p>
+              </div>
+              <!-- Prima riga: Latitudine e Longitudine affiancati -->
+              <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div class="route-field" style="margin: 0;">
+                  <label for="pxmGeoLatInput">🧭 Latitudine</label>
+                  <input id="pxmGeoLatInput"
+                         class="db-search-input"
+                         type="text"
+                         placeholder="Es. 41.9028">
+                </div>
+                <div class="route-field" style="margin: 0;">
+                  <label for="pxmGeoLonInput">🧭 Longitudine</label>
+                  <input id="pxmGeoLonInput"
+                         class="db-search-input"
+                         type="text"
+                         placeholder="Es. 12.4964">
+                </div>
+              </div>
+              <!-- Seconda riga: Indirizzo (largo) + Bottoni a destra sotto Longitudine -->
+              <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center;">
+                <div class="route-field" style="margin: 0;">
+                  <label for="pxmGeoAddressInput">🏠 Indirizzo</label>
+                  <input id="pxmGeoAddressInput"
+                         class="db-search-input"
+                         type="text"
+                         placeholder="Es. Via Roma 10, Milano (MI)...">
+                </div>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                  <button class="btn btn-chip" type="button" onclick="geocodePXMAddress()" style="white-space: nowrap;">🔍 Geocodifica Indirizzo</button>
+                  <button class="btn btn-chip" type="button" onclick="searchPXMByCoords()" style="white-space: nowrap;">🔎 Cerca Centrali Vicine</button>
+                </div>
+              </div>
+
+              <div id="pxmGeoResults" style="grid-column: 1 / -1; display: none; margin-top: 1.1rem;"></div>
             </div>
+
           </div>
-          <div style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1px solid #c4b5fd; border-radius: 10px; padding: 0.9rem 1.1rem;">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #5b21b6; margin-bottom: 0.25rem;">🔸 PXM3</div>
-            <div style="font-size: 0.8rem; color: #374151;">
-              Per coda cliente: installare scheda <strong>4WCC</strong> + <strong>4CSM</strong> per l'accesso.
-            </div>
+
+          <div class="route-help-panel">
+            <p><strong>Note su Verifica PXM:</strong></p>
+            <ul>
+              <li><p style="margin-top: 0.4rem;">
+                <strong style="color: #004C99;">📍 Ricerca per Coordinate / Indirizzo Sede Cliente</strong>: trova le centrali di riferimento RA e RC più vicine e le 3 centrali dove è già installata tecnologia DWDM (PXM1/PXM3) per il cliente. Inserisci l'indirizzo completo oppure le coordinate (Lat/Lon). Con
+                <strong>"🔍 Geocodifica Indirizzo"</strong> il sistema converte automaticamente l'indirizzo in coordinate geografiche e avvia subito la ricerca.</p>
+              </li>
+
+              <li><p style="margin-top: 0.9rem;">
+                <strong style="color: #004C99;">🔎 Cerca Centrali Vicine</strong>: calcola tramite algoritmo di <strong>Haversine</strong> la <strong>centrale RC più vicina</strong>, la <strong>centrale RA più vicina</strong> e le <strong>3 centrali PXM1/PXM3 più vicine</strong> alla posizione indicata. Se la centrale RA/RC più vicina coincide con una centrale che ha già scheda PXM installata, viene segnalato con badge dedicato.</p>
+              </li>
+
+              <li><p style="margin-top: 0.9rem;">
+                <strong style="color: #004C99;">PXM1 / PXM3</strong>: indicano automaticamente la scheda da richiedere per l'accesso in coda cliente — <strong>4WCC + 2 FO</strong> su PXM1, <strong>4WCC + 4CSM</strong> su PXM3.</p>
+              </li>
+
+              <li><p style="margin-top: 0.9rem;">
+                <strong style="color: #004C99;">🔍 Ricerca Centrale con Apparati DWDM (PXM1/3)</strong>: cerca per CLLI Sito e/o Descrizione sito su entrambi i database PXM1 e PXM3; clicca sul campo vuoto per sfogliare l'elenco completo. Filtro per tipo (attivo anche sfogliando l'elenco): <strong>🔷 Tutti</strong> (default, nessun filtro), <strong>SOLO PXM1</strong> mostra solo le centrali che hanno esclusivamente PXM1, <strong>SOLO PXM3</strong> solo quelle che hanno esclusivamente PXM3, <strong>PXM1+PXM3</strong> mostra solo le centrali che hanno installate entrambe le schede.</p>
+              </li>
+
+              <li><p style="margin-top: 0.9rem;">
+                <strong style="color: #004C99;">✅ Selezione multipla</strong>: seleziona una o più centrali con le checkbox di riga o con "seleziona tutto" in intestazione. Usa <strong>👁️ Mostra solo selezionate</strong> per isolare le centrali scelte, indipendentemente dal termine di ricerca corrente.</p>
+              </li>
+
+              <li><p style="margin-top: 0.9rem;">
+                <strong style="color: #004C99;">📥 Export e 📋 Copia</strong>: "Esporta Centrali Vicine (CSV)" e "Copia risultati" esportano/copiano i risultati della ricerca per coordinate; "Esporta Tabella (CSV)" esporta esattamente le righe visualizzate in tabella (rispetta ricerca, filtro tipo e "Mostra solo selezionate"); il bottone 📋 su ogni riga copia i dati completi di quella centrale.</p>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <!-- Ricerca -->
+        <!-- 3 card informative PXM su un'unica riga -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-top: 1.5rem; margin-bottom: 1rem;">
+
+          <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid var(--gray-200); border-radius: 10px; padding: 1rem 1.15rem; font-size: 0.8rem; color: #374151; line-height: 1.55;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">🔌 Cosa sono le schede PXM (Processor Switch Module)?</div>
+            <div>Nel mondo DWDM Cisco/Ciena (ex Cerent), le schede <strong>PXM1</strong> e <strong>PXM3</strong> sono delle <strong>Processor Switch Module (PXM)</strong>, cioè le schede di controllo e gestione del nodo ottico — in pratica il "cervello" del nodo DWDM. Si occupano di:</div>
+            <ul style="list-style: disc; margin:0.4rem 0 0.3rem 1.1rem; padding-left:1.1rem;">
+              <li style="margin-bottom:0.2rem;">gestione e supervisione dell'intero chassis;</li>
+              <li style="margin-bottom:0.2rem;">controllo delle schede ottiche installate;</li>
+              <li style="margin-bottom:0.2rem;">provisioning dei circuiti;</li>
+              <li style="margin-bottom:0.2rem;">gestione degli allarmi;</li>
+              <li style="margin-bottom:0.2rem;">sincronizzazione e timing;</li>
+              <li style="margin-bottom:0.2rem;">comunicazione con il sistema di management (EMS/NMS);</li>
+              <li>commutazione e protezione del traffico.</li>
+            </ul>
+          </div>
+
+          <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 10px; padding: 1rem 1.15rem;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #1e40af; margin-bottom: 0.5rem;">PXM1</div>
+            <div style="font-size: 0.8rem; color: #374151; line-height: 1.55;">
+              La centrale risulta dotata di una scheda <strong>PXM1</strong>.
+              <div style="margin-top:0.5rem;"><strong>Per l'accesso in coda cliente</strong> è normalmente richiesta l'installazione di:</div>
+              <ul style="list-style: disc; margin:0.3rem 0 0.3rem 1.1rem; padding-left:1.1rem;">
+                <li style="margin-bottom:0.2rem;">scheda <strong>4WCC</strong> (transponder);</li>
+                <li><strong>2 Fibre Ottiche (2 FO)</strong> dedicate verso la linea DWDM.</li>
+              </ul>
+              <div style="margin-top:0.5rem; padding-left:0.7rem; border-left:3px solid #93c5fd;">
+                ...senza modulo di filtraggio dedicato, architettura tipicamente più semplice, adatta a un numero contenuto di canali/lambda. È la prima generazione di PXM: CPU e memoria più limitate, meno circuiti/servizi gestibili e prestazioni inferiori su reti di grandi dimensioni rispetto a PXM3 — oggi considerata piuttosto datata.
+              </div>
+              <div style="margin-top:0.5rem;">La presenza di PXM1 è un indicatore che la centrale dispone già di un apparato DWDM attivo, potenzialmente riutilizzabile per la nuova attivazione anziché installare un sistema DWDM ex novo.</div>
+            </div>
+          </div>
+
+          <div style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1px solid #c4b5fd; border-radius: 10px; padding: 1rem 1.15rem;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: #5b21b6; margin-bottom: 0.5rem;">PXM3</div>
+            <div style="font-size: 0.8rem; color: #374151; line-height: 1.55;">
+              La centrale risulta dotata di una scheda <strong>PXM3</strong>.
+              <div style="margin-top:0.5rem;"><strong>Per l'accesso in coda cliente</strong> è normalmente richiesta l'installazione di:</div>
+              <ul style="list-style: disc; margin:0.3rem 0 0.3rem 1.1rem; padding-left:1.1rem;">
+                <li style="margin-bottom:0.2rem;">scheda <strong>4WCC</strong> (transponder);</li>
+                <li><strong>4CSM</strong> — 4 moduli filtro/selettori di canale.</li>
+              </ul>
+              <div style="margin-top:0.5rem; padding-left:0.7rem; border-left:3px solid #c4b5fd;">
+                Transponder 4WCC abbinato a 4 moduli di filtraggio/selezione canale (4CSM): architettura con filtraggio dedicato per canale, tipica di shelf a maggiore densità/multiplexing dove è necessario isolare la singola lambda. Versione evoluta rispetto a PXM1: CPU e memoria più potenti, più cross-connect/circuiti gestibili e migliore scalabilità su reti backbone — molte reti DWDM sono state aggiornate da PXM1 a PXM3 proprio per supportare 10G/40G/100G.
+              </div>
+              <div style="margin-top:0.5rem;">La presenza di PXM3 indica una piattaforma DWDM già installata, spesso predisposta per più canali contemporanei grazie al filtraggio dedicato per lambda.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border-left: 4px solid #3b82f6; border-radius: 6px; padding: 0.9rem 1.1rem; margin-bottom: 1rem; font-size: 0.8rem; color: #1e3a8a; line-height: 1.55;">
+          <strong>💡 Nota di fattibilità:</strong> in fase di Studio di Fattibilità (SdF), sulla centrale d'accesso impattata dalla coda cliente si verifica prima se è già presente un DWDM (PXM1/PXM3): se sì, <strong>non si prevede l'installazione ex-novo dell'intero apparato/cestello</strong>, ma si riutilizza quello esistente aggiungendo solo <strong>4WCC</strong> (transponder) — più <strong>2 FO</strong> da richiedere a <strong>FOL</strong> su PXM1, oppure <strong>4CSM</strong> (filtro) su PXM3. Questo, anche in valutazioni parametriche, riduce l'acquisto di materiale già presente in centrale. Resta comunque necessaria la verifica d'ingegneria sulla disponibilità di <strong>slot liberi su NNI</strong> per l'installazione delle nuove piastre prima di confermare il riutilizzo.
+        </div>
+
+        <!-- Ricerca Centrale (larghezza piena) -->
         <div style="background: var(--gray-50); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid var(--gray-200);">
           <h3 style="margin: 0 0 0.75rem 0; font-size: 1rem; color: var(--tim-blue); display: flex; align-items: center; gap: 0.5rem;">
-            🔍 Ricerca Centrale
+            🔍 Ricerca Centrale con Apparati DWDM (PXM1/3)
           </h3>
           <p style="font-size: 0.82rem; color: #4b5563; margin: 0 0 1rem 0;">
             Cerca per <strong>CLLI Sito</strong> (es. ACIRITDQ) e/o <strong>Descrizione sito collocazione</strong> (es. CATANIA). La ricerca è live e verifica automaticamente su entrambi i database PXM1 e PXM3. Clicca sul campo vuoto per sfogliare l'elenco completo delle centrali installate.
           </p>
+
+          <!-- Filtro Tipo -->
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem;">
+            <label style="font-size: 0.75rem; color: #4b5563;">Filtra per tipo:</label>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <button type="button" id="pxmFilterBtnALL" class="btn btn-chip pxm-filter-btn pxm-filter-active" onclick="setPXMTipoFilter('ALL')" style="white-space: nowrap; background: #475569; color: white; border-color: #475569;">
+                🔷 Tutti
+              </button>
+              <button type="button" id="pxmFilterBtnPXM1" class="btn btn-chip pxm-filter-btn" onclick="setPXMTipoFilter('PXM1')" style="white-space: nowrap; background: #eff6ff; color: #1d4ed8; border-color: #93c5fd;">
+                SOLO PXM1
+              </button>
+              <button type="button" id="pxmFilterBtnPXM3" class="btn btn-chip pxm-filter-btn" onclick="setPXMTipoFilter('PXM3')" style="white-space: nowrap; background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd;">
+                SOLO PXM3
+              </button>
+              <button type="button" id="pxmFilterBtnBOTH" class="btn btn-chip pxm-filter-btn" onclick="setPXMTipoFilter('BOTH')" style="white-space: nowrap; background: #fff7ed; color: #c2410c; border-color: #fdba74;">
+                PXM1+PXM3
+              </button>
+            </div>
+          </div>
 
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
             <div style="flex: 1; min-width: 280px;">
@@ -33175,10 +33335,15 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
           </div>
         </div>
 
-        <!-- Risultati -->
-        <div id="pxmResultsWrap" style="display: none;">
-          <div style="overflow-x: auto; max-height: 480px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 8px;">
-            <table class="db-table" id="pxmResultsTable" style="width: 100%; font-size: 0.82rem; white-space: nowrap;">
+        <!-- Risultati (larghezza piena) -->
+        <div id="pxmResultsWrap" style="display: none; margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+            <button type="button" class="btn btn-chip" onclick="exportPXMTableCSV()" style="white-space: nowrap;">
+              📥 Esporta Tabella (CSV)
+            </button>
+          </div>
+          <div style="overflow-x: auto; max-height: 560px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 8px;">
+            <table class="db-table" id="pxmResultsTable" style="width: 100%; font-size: 0.82rem; table-layout: auto;">
               <thead style="position: sticky; top: 0; background: #f9fafb; z-index: 1;">
                 <tr>
                   <th style="width: 32px; text-align: center;"><input type="checkbox" id="pxmSelectAllCheckbox" onchange="togglePXMSelectAll(this.checked)" title="Seleziona/Deseleziona tutti"></th>
@@ -33193,6 +33358,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                   <th>Costruttore</th>
                   <th>Modello</th>
                   <th>Scheda richiesta</th>
+                  <th style="width: 60px; text-align: center;">📋</th>
                 </tr>
               </thead>
               <tbody id="pxmResultsBody"></tbody>
@@ -33200,7 +33366,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
           </div>
         </div>
 
-        <!-- Riepilogo Selezione -->
+        <!-- Riepilogo Selezione (larghezza piena) -->
         <div id="pxmSelectionWrap" style="display: none; margin-top: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #7dd3fc; border-radius: 10px; padding: 1rem 1.25rem;">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
             <h3 style="margin: 0; font-size: 0.95rem; color: #0369a1; display: flex; align-items: center; gap: 0.5rem;">
@@ -33224,6 +33390,9 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
         <div id="pxmNoResults" style="display: none; text-align: center; padding: 2.5rem 0; color: #b91c1c; font-size: 0.9rem;">
           ❌ Nessuna centrale trovata con PXM1 o PXM3 per il termine cercato.
         </div>
+
+        <!-- Spaziatore: garantisce spazio sufficiente sotto il campo di ricerca per la tendina autocomplete, in ogni stato della pagina -->
+        <div style="min-height: 320px;" aria-hidden="true"></div>
 
       </div>
     </div>
@@ -33262,6 +33431,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
 
   // ===== Selezione multipla =====
   const _pxmSelected = new Set();
+  let _pxmTipoFilter = 'ALL'; // 'ALL' | 'PXM1' | 'PXM3' | 'BOTH'
   let _pxmByIdCache = null;
   function getPXMById(id) {
     if (!_pxmByIdCache) {
@@ -33349,6 +33519,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
   }
 
   function buildPXMRowsHtml(records) {
+    window._pxmLastRenderedRecords = records;
     let html = '';
     records.forEach(function(rec) {
       const isP1 = rec.tipo === 'PXM1';
@@ -33375,10 +33546,354 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
         '<td>' + escapeHtml(rec.costr) + '</td>' +
         '<td>' + escapeHtml(rec.mod) + '</td>' +
         '<td style="font-size:0.75rem;color:#374151;">' + CARD_NOTE[rec.tipo] + '</td>' +
+        '<td style="text-align:center;"><button type="button" class="btn btn-chip" onclick="copyPXMRow(\'' + escapeHtml(rec.id).replace(/'/g, "\\'") + '\')" title="Copia riga" style="padding:2px 8px;font-size:0.72rem;">📋</button></td>' +
         '</tr>';
     });
     return html;
   }
+
+  window.copyPXMRow = function(id) {
+    const rec = getPXMById(id);
+    if (!rec) return;
+    const coord = PXM_COORDS[rec.clli];
+    const nomeSede = coord ? coord[0] : 'N/D';
+    const comune = coord ? coord[1] : 'N/D';
+    const lat = coord ? coord[2] : 'N/D';
+    const lon = coord ? coord[3] : 'N/D';
+    const text = [
+      'Tipo: ' + rec.tipo,
+      'CLLI Sito: ' + rec.clli,
+      'Descrizione Sito: ' + rec.sede,
+      'Nome Sede: ' + nomeSede,
+      'Comune: ' + comune,
+      'Lat: ' + lat,
+      'Long: ' + lon,
+      'ID Apparato: ' + rec.id,
+      'Costruttore: ' + rec.costr,
+      'Modello: ' + rec.mod,
+      'Scheda richiesta: ' + CARD_NOTE[rec.tipo]
+    ].join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        if (typeof showToast === 'function') showToast('📋 Riga copiata negli appunti', 'success');
+      });
+    }
+  };
+
+  function pxmRecordsToCSV(records) {
+    const headers = ['Tipo', 'CLLI Sito', 'Descrizione Sito', 'Nome Sede', 'Comune', 'Lat', 'Long', 'ID Apparato', 'Costruttore', 'Modello', 'Scheda richiesta'];
+    let csv = headers.join(';') + '\n';
+    records.forEach(function(rec) {
+      const coord = PXM_COORDS[rec.clli];
+      const nomeSede = coord ? coord[0] : '';
+      const comune = coord ? coord[1] : '';
+      const lat = coord ? coord[2] : '';
+      const lon = coord ? coord[3] : '';
+      const row = [rec.tipo, rec.clli, rec.sede, nomeSede, comune, lat, lon, rec.id, rec.costr, rec.mod, CARD_NOTE[rec.tipo]];
+      csv += row.map(function(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }).join(';') + '\n';
+    });
+    return csv;
+  }
+
+  function pxmDownloadCSV(csv, filenamePrefix) {
+    const now = new Date();
+    const fileName = filenamePrefix + '_' + now.toISOString().slice(0, 10) + '.csv';
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  window.exportPXMTableCSV = function() {
+    const records = window._pxmLastRenderedRecords || [];
+    if (!records.length) {
+      if (typeof showAlert === 'function') showAlert('Nessun dato in tabella da esportare.');
+      return;
+    }
+    pxmDownloadCSV(pxmRecordsToCSV(records), 'CRO_VerificaPXM_Tabella');
+  };
+
+  // ===== Ricerca per Coordinate / Indirizzo =====
+  function pxmHaversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function pxmParseCoord(v) {
+    if (v == null) return NaN;
+    const s = String(v).trim().replace(',', '.');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  window.geocodePXMAddress = function() {
+    const input = document.getElementById('pxmGeoAddressInput');
+    const address = input ? input.value.trim() : '';
+    if (!address) {
+      if (typeof window.showAlert === 'function') window.showAlert('Inserisci un indirizzo da geocodificare.');
+      else alert('Inserisci un indirizzo da geocodificare.');
+      return;
+    }
+    const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=it&q=' + encodeURIComponent(address);
+    fetch(url, { headers: { 'Accept-Language': 'it' } })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data || !data.length) {
+          const msg = '❌ Indirizzo non trovato. Prova con un indirizzo più specifico o inserisci Lat/Lon manualmente.';
+          if (typeof window.showAlert === 'function') window.showAlert(msg); else alert(msg);
+          return;
+        }
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        const latInput = document.getElementById('pxmGeoLatInput');
+        const lonInput = document.getElementById('pxmGeoLonInput');
+        if (latInput) latInput.value = lat.toFixed(6);
+        if (lonInput) lonInput.value = lon.toFixed(6);
+        const msgOk = '✅ Coordinate trovate. Ora clicca "🔎 Cerca Centrali Vicine".';
+        if (typeof window.showAlert === 'function') window.showAlert(msgOk); else console.log(msgOk);
+      })
+      .catch(function(err) {
+        console.error('[PXM Geo] Errore geocodifica:', err);
+        const msg = '❌ Errore durante la geocodifica. Riprova più tardi.';
+        if (typeof window.showAlert === 'function') window.showAlert(msg); else alert(msg);
+      });
+  };
+
+  window.resetPXMGeoSearch = function() {
+    const addr = document.getElementById('pxmGeoAddressInput');
+    const lat = document.getElementById('pxmGeoLatInput');
+    const lon = document.getElementById('pxmGeoLonInput');
+    const results = document.getElementById('pxmGeoResults');
+    if (addr) addr.value = '';
+    if (lat) lat.value = '';
+    if (lon) lon.value = '';
+    if (results) { results.style.display = 'none'; results.innerHTML = ''; }
+  };
+
+  window.searchPXMByCoords = function() {
+    const latInput = document.getElementById('pxmGeoLatInput');
+    const lonInput = document.getElementById('pxmGeoLonInput');
+    const results = document.getElementById('pxmGeoResults');
+    const lat = pxmParseCoord(latInput ? latInput.value : '');
+    const lon = pxmParseCoord(lonInput ? lonInput.value : '');
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      const msg = 'Inserisci coordinate valide (Lat/Lon) o geocodifica un indirizzo.';
+      if (typeof window.showAlert === 'function') window.showAlert(msg); else alert(msg);
+      return;
+    }
+
+    // Insieme CLLI con PXM (per verifica coincidenza) + lista punti PXM georeferenziati
+    const pxmByCLLI = {};
+    PXM_DB.forEach(function(rec) {
+      if (!pxmByCLLI[rec.clli]) pxmByCLLI[rec.clli] = { clli: rec.clli, sede: rec.sede, tipi: new Set() };
+      pxmByCLLI[rec.clli].tipi.add(rec.tipo);
+    });
+
+    const pxmPoints = [];
+    Object.keys(pxmByCLLI).forEach(function(clli) {
+      const coord = PXM_COORDS[clli];
+      if (coord && pxmParseCoord(coord[2]) && pxmParseCoord(coord[3])) {
+        pxmPoints.push({
+          clli: clli,
+          nomeSede: coord[0],
+          comune: coord[1],
+          lat: pxmParseCoord(coord[2]),
+          lon: pxmParseCoord(coord[3]),
+          tipi: Array.from(pxmByCLLI[clli].tipi).sort()
+        });
+      }
+    });
+
+    pxmPoints.forEach(function(p) { p.dist = pxmHaversine(lat, lon, p.lat, p.lon); });
+    pxmPoints.sort(function(a, b) { return a.dist - b.dist; });
+    const top3PXM = pxmPoints.slice(0, 3);
+
+    // Centrale RC più vicina (da RAW_DB)
+    let bestRC = null;
+    if (Array.isArray(window.RAW_DB)) {
+      window.RAW_DB.forEach(function(row) {
+        [['A'], ['Z']].forEach(function(side) {
+          const s = side[0];
+          const gat = row['GAT_' + s];
+          const clli = row['CLLI_' + s];
+          const cLat = pxmParseCoord(row['Lat_GAT_' + s]);
+          const cLon = pxmParseCoord(row['Lon_GAT_' + s]);
+          if (gat && clli && Number.isFinite(cLat) && Number.isFinite(cLon)) {
+            const dist = pxmHaversine(lat, lon, cLat, cLon);
+            if (!bestRC || dist < bestRC.dist) {
+              bestRC = { nome: gat.trim(), clli: clli.trim(), lat: cLat, lon: cLon, dist: dist };
+            }
+          }
+        });
+      });
+    }
+
+    // Centrale RA più vicina (da RAW_DB_RA)
+    let bestRA = null;
+    if (Array.isArray(window.RAW_DB_RA)) {
+      window.RAW_DB_RA.forEach(function(row) {
+        [['A'], ['Z']].forEach(function(side) {
+          const s = side[0];
+          const gat = row['GAT_' + s];
+          const clli = row['CLLI_' + s];
+          const cLat = pxmParseCoord(row['Lat_GAT_' + s]);
+          const cLon = pxmParseCoord(row['Lon_GAT_' + s]);
+          if (gat && clli && Number.isFinite(cLat) && Number.isFinite(cLon)) {
+            const dist = pxmHaversine(lat, lon, cLat, cLon);
+            if (!bestRA || dist < bestRA.dist) {
+              bestRA = { nome: gat.trim(), clli: clli.trim(), lat: cLat, lon: cLon, dist: dist };
+            }
+          }
+        });
+      });
+    }
+
+    function pxmMatchInfo(clli) {
+      if (!clli || !pxmByCLLI[clli]) return null;
+      return Array.from(pxmByCLLI[clli].tipi).sort();
+    }
+
+    function renderCentraleCard(title, colorBorder, colorText, central) {
+      if (!central) {
+        return '<div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:0.9rem 1.1rem;">' +
+          '<div style="font-size:0.85rem;font-weight:700;color:' + colorText + ';margin-bottom:0.25rem;">' + title + '</div>' +
+          '<div style="font-size:0.8rem;color:#9ca3af;">Nessuna centrale trovata nel DB.</div></div>';
+      }
+      const pxmTipi = pxmMatchInfo(central.clli);
+      let coincideHtml = '';
+      if (pxmTipi && pxmTipi.length) {
+        const badges = pxmTipi.map(function(t) {
+          const isP1 = t === 'PXM1';
+          const bg = isP1 ? '#dbeafe' : '#ede9fe';
+          const col = isP1 ? '#1d4ed8' : '#6d28d9';
+          return '<span style="background:' + bg + ';color:' + col + ';padding:2px 8px;border-radius:5px;font-weight:700;font-size:0.7rem;margin-right:4px;">' + t + '</span>';
+        }).join('');
+        coincideHtml = '<div style="margin-top:0.5rem;font-size:0.78rem;color:#15803d;">🧩 Questa centrale ha scheda PXM installata: ' + badges + '</div>';
+      } else {
+        coincideHtml = '<div style="margin-top:0.5rem;font-size:0.78rem;color:#9ca3af;">Nessuna scheda PXM installata su questa centrale.</div>';
+      }
+      return '<div style="background:white;border:1px solid ' + colorBorder + ';border-radius:10px;padding:0.9rem 1.1rem;">' +
+        '<div style="font-size:0.85rem;font-weight:700;color:' + colorText + ';margin-bottom:0.25rem;">' + title + '</div>' +
+        '<div style="font-size:0.88rem;font-weight:600;color:#111827;">' + escapeHtml(central.nome) + '</div>' +
+        '<div style="font-size:0.78rem;color:#4b5563;">CLLI: ' + escapeHtml(central.clli) + ' &nbsp;•&nbsp; ' + central.dist.toFixed(2) + ' km</div>' +
+        coincideHtml + '</div>';
+    }
+
+    let html = '<div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">' +
+      '<button type="button" class="btn btn-chip" onclick="copyPXMGeoResults()" style="white-space:nowrap;">📋 Copia risultati</button>' +
+      '<button type="button" class="btn btn-chip" onclick="exportPXMGeoResultsCSV()" style="white-space:nowrap;">📥 Esporta Centrali Vicine (CSV)</button>' +
+      '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0.85rem;margin-bottom:1rem;">';
+    html += renderCentraleCard('🔴 Centrale RC più vicina', '#fecaca', '#dc2626', bestRC);
+    html += renderCentraleCard('🔵 Centrale RA più vicina', '#bfdbfe', '#0066CC', bestRA);
+    html += '</div>';
+
+    html += '<div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:0.9rem 1.1rem;">';
+    html += '<div style="font-size:0.85rem;font-weight:700;color:#374151;margin-bottom:0.6rem;">🧩 3 Centrali PXM1/PXM3 più vicine</div>';
+    if (!top3PXM.length) {
+      html += '<div style="font-size:0.8rem;color:#9ca3af;">Nessuna centrale PXM georeferenziata trovata.</div>';
+    } else {
+      html += '<div style="display:flex;flex-direction:column;gap:0.5rem;">';
+      top3PXM.forEach(function(p, idx) {
+        const badges = p.tipi.map(function(t) {
+          const isP1 = t === 'PXM1';
+          const bg = isP1 ? '#dbeafe' : '#ede9fe';
+          const col = isP1 ? '#1d4ed8' : '#6d28d9';
+          return '<span style="background:' + bg + ';color:' + col + ';padding:2px 8px;border-radius:5px;font-weight:700;font-size:0.7rem;margin-right:4px;">' + t + '</span>';
+        }).join('');
+        html += '<div style="display:flex;align-items:center;gap:0.6rem;border:1px solid var(--gray-200);border-radius:8px;padding:0.5rem 0.75rem;">' +
+          '<span style="font-weight:700;color:#6b7280;">#' + (idx + 1) + '</span>' +
+          '<span style="flex:1;min-width:0;">' +
+            '<div style="font-weight:600;color:#111827;font-size:0.85rem;">' + escapeHtml(p.nomeSede) + ' <span style="font-weight:400;color:#6b7280;">(' + escapeHtml(p.clli) + ')</span></div>' +
+            '<div style="font-size:0.75rem;color:#6b7280;">' + escapeHtml(p.comune) + ' &nbsp;•&nbsp; ' + p.dist.toFixed(2) + ' km</div>' +
+          '</span>' +
+          badges +
+          '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+
+    window._pxmLastGeoResult = {
+      lat: lat, lon: lon,
+      bestRC: bestRC, bestRCTipi: bestRC ? pxmMatchInfo(bestRC.clli) : null,
+      bestRA: bestRA, bestRATipi: bestRA ? pxmMatchInfo(bestRA.clli) : null,
+      top3PXM: top3PXM
+    };
+
+    results.innerHTML = html;
+    results.style.display = 'block';
+  };
+
+  window.copyPXMGeoResults = function() {
+    const r = window._pxmLastGeoResult;
+    if (!r) return;
+    const lines = [];
+    lines.push('Ricerca Centrali Vicine — Lat: ' + r.lat.toFixed(6) + ', Lon: ' + r.lon.toFixed(6));
+    lines.push('');
+    lines.push('Centrale RC più vicina:');
+    if (r.bestRC) {
+      lines.push('  ' + r.bestRC.nome + ' (CLLI: ' + r.bestRC.clli + ') — ' + r.bestRC.dist.toFixed(2) + ' km');
+      lines.push('  PXM installata: ' + (r.bestRCTipi && r.bestRCTipi.length ? r.bestRCTipi.join(' + ') : 'nessuna'));
+    } else {
+      lines.push('  Nessuna centrale trovata.');
+    }
+    lines.push('');
+    lines.push('Centrale RA più vicina:');
+    if (r.bestRA) {
+      lines.push('  ' + r.bestRA.nome + ' (CLLI: ' + r.bestRA.clli + ') — ' + r.bestRA.dist.toFixed(2) + ' km');
+      lines.push('  PXM installata: ' + (r.bestRATipi && r.bestRATipi.length ? r.bestRATipi.join(' + ') : 'nessuna'));
+    } else {
+      lines.push('  Nessuna centrale trovata.');
+    }
+    lines.push('');
+    lines.push('3 Centrali PXM1/PXM3 più vicine:');
+    if (r.top3PXM.length) {
+      r.top3PXM.forEach(function(p, idx) {
+        lines.push('  #' + (idx + 1) + ' ' + p.nomeSede + ' (' + p.clli + ') — ' + p.comune + ' — ' + p.dist.toFixed(2) + ' km — ' + p.tipi.join(' + '));
+      });
+    } else {
+      lines.push('  Nessuna centrale PXM georeferenziata trovata.');
+    }
+    const text = lines.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        if (typeof showToast === 'function') showToast('📋 Risultati copiati negli appunti', 'success');
+      });
+    }
+  };
+
+  window.exportPXMGeoResultsCSV = function() {
+    const r = window._pxmLastGeoResult;
+    if (!r) {
+      if (typeof showAlert === 'function') showAlert('Nessuna ricerca per coordinate effettuata.');
+      return;
+    }
+    const headers = ['Categoria', 'Nome', 'CLLI', 'Comune', 'Distanza (km)', 'PXM installata'];
+    let csv = headers.join(';') + '\n';
+    function addRow(cat, nome, clli, comune, dist, pxm) {
+      const row = [cat, nome, clli, comune, dist, pxm];
+      csv += row.map(function(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }).join(';') + '\n';
+    }
+    if (r.bestRC) addRow('Centrale RC più vicina', r.bestRC.nome, r.bestRC.clli, '', r.bestRC.dist.toFixed(2), (r.bestRCTipi || []).join(' + ') || 'nessuna');
+    if (r.bestRA) addRow('Centrale RA più vicina', r.bestRA.nome, r.bestRA.clli, '', r.bestRA.dist.toFixed(2), (r.bestRATipi || []).join(' + ') || 'nessuna');
+    r.top3PXM.forEach(function(p, idx) {
+      addRow('PXM più vicina #' + (idx + 1), p.nomeSede, p.clli, p.comune, p.dist.toFixed(2), p.tipi.join(' + '));
+    });
+    pxmDownloadCSV(csv, 'CRO_VerificaPXM_CentraliVicine');
+  };
 
   window.showPXMSelectionOnly = function() {
     if (!_pxmSelected.size) return;
@@ -33414,6 +33929,53 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
     updatePXMSelectAllState();
   };
 
+  let _pxmTipiByClliCache = null;
+  function getPXMTipiByClli() {
+    if (!_pxmTipiByClliCache) {
+      _pxmTipiByClliCache = {};
+      PXM_DB.forEach(function(rec) {
+        if (!_pxmTipiByClliCache[rec.clli]) _pxmTipiByClliCache[rec.clli] = new Set();
+        _pxmTipiByClliCache[rec.clli].add(rec.tipo);
+      });
+    }
+    return _pxmTipiByClliCache;
+  }
+
+  window.setPXMTipoFilter = function(tipo) {
+    _pxmTipoFilter = tipo;
+    const palette = {
+      ALL:  { solid: '#475569', pastelBg: '#f1f5f9', pastelText: '#475569', pastelBorder: '#cbd5e1' }, // slate — nessun filtro
+      PXM1: { solid: '#1d4ed8', pastelBg: '#eff6ff', pastelText: '#1d4ed8', pastelBorder: '#93c5fd' }, // blu — coerente con badge/card PXM1
+      PXM3: { solid: '#6d28d9', pastelBg: '#f5f3ff', pastelText: '#6d28d9', pastelBorder: '#c4b5fd' }, // viola — coerente con badge/card PXM3
+      BOTH: { solid: '#c2410c', pastelBg: '#fff7ed', pastelText: '#c2410c', pastelBorder: '#fdba74' }  // arancio — combinazione PXM1+PXM3, distinto dal viola
+    };
+    ['ALL', 'PXM1', 'PXM3', 'BOTH'].forEach(function(t) {
+      const btn = document.getElementById('pxmFilterBtn' + t);
+      if (!btn) return;
+      const c = palette[t];
+      if (t === tipo) {
+        btn.classList.add('pxm-filter-active');
+        btn.style.background = c.solid;
+        btn.style.color = 'white';
+        btn.style.borderColor = c.solid;
+      } else {
+        btn.classList.remove('pxm-filter-active');
+        btn.style.background = c.pastelBg;
+        btn.style.color = c.pastelText;
+        btn.style.borderColor = c.pastelBorder;
+      }
+    });
+    const input = document.getElementById('pxmSearchInput');
+    if (input && input.value.trim()) {
+      searchPXM();
+    } else {
+      const dropdown = document.getElementById('pxmSearchDropdown');
+      if (dropdown && dropdown.classList.contains('active')) {
+        showPXMDropdown();
+      }
+    }
+  };
+
   window.searchPXM = function() {
     const input = document.getElementById('pxmSearchInput');
     const term = normalize(input ? input.value : '');
@@ -33434,10 +33996,23 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
       return;
     }
 
-    const matches = PXM_DB.filter(function(rec) {
+    let matches = PXM_DB.filter(function(rec) {
       return normalize(rec.clli).indexOf(term) !== -1 ||
              normalize(rec.sede).indexOf(term) !== -1;
     });
+    const tipiByClliGlobal = getPXMTipiByClli();
+    if (_pxmTipoFilter === 'PXM1' || _pxmTipoFilter === 'PXM3') {
+      const other = _pxmTipoFilter === 'PXM1' ? 'PXM3' : 'PXM1';
+      matches = matches.filter(function(rec) {
+        const tipi = tipiByClliGlobal[rec.clli];
+        return rec.tipo === _pxmTipoFilter && tipi && !tipi.has(other);
+      });
+    } else if (_pxmTipoFilter === 'BOTH') {
+      matches = matches.filter(function(rec) {
+        const tipi = tipiByClliGlobal[rec.clli];
+        return tipi && tipi.has('PXM1') && tipi.has('PXM3');
+      });
+    }
 
     emptyState.style.display = 'none';
 
@@ -33498,7 +34073,12 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
     if (!input || !dropdown) return;
     if (input.value.trim()) { hidePXMDropdown(); return; }
 
-    const list = getPXMCentraliList();
+    const list = getPXMCentraliList().filter(function(item) {
+      if (_pxmTipoFilter === 'BOTH') return !!(item.tipi['PXM1'] && item.tipi['PXM3']);
+      if (_pxmTipoFilter === 'PXM1') return !!(item.tipi['PXM1'] && !item.tipi['PXM3']);
+      if (_pxmTipoFilter === 'PXM3') return !!(item.tipi['PXM3'] && !item.tipi['PXM1']);
+      return true;
+    });
     let html = '';
     list.forEach(function(item) {
       const badges = (item.tipi['PXM1'] ? '<span style="background:#dbeafe;color:#1d4ed8;padding:1px 6px;border-radius:4px;font-size:0.68rem;font-weight:700;margin-left:6px;">PXM1</span>' : '') +
@@ -33597,7 +34177,21 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
               </p>
 
               <div class="docs-callout docs-callout-warning novita-box-current" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-left: 4px solid #d1008f; padding: 1.25rem; border-radius: 8px; margin: 1.5rem 0;">
-                <strong style="color: #be185d; font-size: 1.05rem;">📌 Novità V50.07.10 | Lug 2026 — Ultimo Aggiornamento</strong>
+                <strong style="color: #be185d; font-size: 1.05rem;">📌 Novità V50.07.13 | Lug 2026 — Ultimo Aggiornamento</strong>
+                <p style="margin: 0.75rem 0 0.5rem 0; color: #9d174d;">
+                  Tab Verifica PXM — Riutilizzo DWDM Esistente: ricerca per coordinate, filtro tipo, export/copia, layout e contenuti rifiniti
+                </p>
+                <ul class="docs-list docs-list-bullets" style="margin: 0;">
+                  <li><strong>📍 Ricerca per Coordinate / Indirizzo Sede Cliente</strong>: trova la centrale RA e la centrale RC più vicine e le 3 centrali PXM più vicine (algoritmo Haversine), con segnalazione se la centrale RC/RA coincide con una PXM.</li>
+                  <li><strong>🔍 Filtro per tipo</strong>: 🔷 Tutti (default), SOLO PXM1, SOLO PXM3 (esclusivi), PXM1+PXM3 (solo centrali con entrambe), attivo sia in ricerca sia sfogliando l'elenco.</li>
+                  <li><strong>📥 Export CSV e 📋 Copia appunti</strong>: per i risultati "Centrali Vicine", per la tabella risultati (rispetta ricerca/filtro/selezione) e per la singola riga.</li>
+                  <li><strong>🎨 Layout riallineato</strong>: pannello Note della stessa altezza del box di ricerca coordinate, tabella risultati a piena larghezza, 3 card informative PXM su un'unica riga.</li>
+                  <li><strong>📚 Info PXM1/PXM3 arricchite</strong>: box generico "Cosa sono le PXM", requisiti scheda per coda cliente, nota di fattibilità SdF (riutilizzo vs nuova installazione, slot liberi su NNI).</li>
+                </ul>
+              </div>
+
+              <div class="docs-callout docs-callout-warning novita-box-previous" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-left: 4px solid #d1008f; padding: 1.25rem; border-radius: 8px; margin: 1.5rem 0;">
+                <strong style="color: #be185d; font-size: 1.05rem;">📋 Novità V50.07.10 | Lug 2026</strong>
                 <p style="margin: 0.75rem 0 0.5rem 0; color: #9d174d;">
                   Tab Verifica PXM: selezione multipla e vista filtrata sulle centrali scelte
                 </p>
@@ -35862,7 +36456,7 @@ PERCORSI ALTERNATIVI (Div):
                 <dd>Percorso diversificato con overlap <30% vs 1.1. Per ridondanza e disaster recovery</dd>
 
                 <dt><strong>PXM1 / PXM3</strong></dt>
-                <dd>Schede DWDM per apparati ottici di centrale. Per l'accesso in coda cliente richiedono rispettivamente scheda <strong>4WCC + 2 FO</strong> (PXM1) e <strong>4WCC + 4CSM</strong> (PXM3). Verificabili nel tab <em>Verifica PXM</em></dd>
+                <dd>Processor Switch Module: schede di controllo/gestione del nodo ottico DWDM (supervisione chassis, provisioning circuiti, allarmi, sync/timing). PXM1 = prima generazione (CPU/memoria limitate); PXM3 = versione evoluta (CPU più potente, più cross-connect, supporto 10G/40G/100G). Per l'accesso in coda cliente richiedono rispettivamente scheda <strong>4WCC + 2 FO</strong> (PXM1) e <strong>4WCC + 4CSM</strong> (PXM3). Verificabili nel tab <em>Verifica PXM</em></dd>
 
                 <dt><strong>RA Italia (Rete Aggregation Italia)</strong></dt>
                 <dd>Rete di aggregazione TIM che raccoglie traffico dalle centrali periferiche verso i nodi Core (NODO A1). Struttura gerarchica: Tipo 3 → Tipo 2 → Tipo 1</dd>
@@ -36154,17 +36748,21 @@ PERCORSI ALTERNATIVI (Div):
                   🧩 Verifica PXM — Centrali con scheda DWDM PXM1/PXM3
                 </summary>
                 <div style="margin-top:0.6rem;padding-left:1rem;display:flex;flex-direction:column;gap:0.5rem;font-size:0.88rem;">
-                  <p><strong>Scopo:</strong> Verificare se una centrale dispone di scheda <strong>PXM1</strong> o <strong>PXM3</strong> (DWDM) e ottenere la scheda richiesta per la coda cliente: <strong>4WCC + 2 FO</strong> su PXM1, <strong>4WCC + 4CSM</strong> su PXM3. Database di 3.478 record (1.040 PXM1 + 2.438 PXM3) da anagrafica SHELF_PXM1/PXM3.</p>
+                  <p><strong>Scopo:</strong> nelle Studi di Fattibilità (SdF), verificare se la centrale d'accesso impattata dalla coda cliente ha già un DWDM installato (<strong>PXM1</strong> o <strong>PXM3</strong>), per evitare di prevedere una nuova installazione ex-novo dell'apparato/cestello e riutilizzare quello esistente: basta aggiungere <strong>4WCC + 2 FO</strong> (2 FO da richiedere a FOL) su PXM1, oppure <strong>4WCC + 4CSM</strong> su PXM3 — riducendo, anche in valutazioni parametriche, l'acquisto di materiale già presente in centrale, previa verifica di slot liberi su NNI per l'installazione delle nuove piastre. Database di 3.478 record (1.040 PXM1 + 2.438 PXM3) da anagrafica SHELF_PXM1/PXM3.</p>
                   <p><strong>Come si usa:</strong></p>
                   <ul style="margin-left:1.2rem;line-height:1.8;">
                     <li>Accedi da <strong>Analisi Extra → Verifica PXM</strong>.</li>
+                    <li><strong>📍 Ricerca per Coordinate / Indirizzo Sede Cliente</strong>: trova le centrali di riferimento RA e RC più vicine e le 3 centrali dove è già installata tecnologia DWDM (PXM1/PXM3) per il cliente. Geocodifica l'indirizzo della Sede Cliente o inserisci Lat/Lon (algoritmo Haversine), con segnalazione se la centrale RC/RA coincide con una PXM. Esporta (CSV) o copia i risultati con gli appositi bottoni.</li>
                     <li>Cerca per <em>CLLI Sito</em> e/o <em>Descrizione sito</em> nel campo di ricerca live (case/accent-insensitive), oppure clicca sul campo vuoto per sfogliare l'elenco completo delle centrali installate.</li>
-                    <li>I risultati mostrano Tipo (PXM1/PXM3), CLLI, Descrizione Sito, Nome Sede/Comune/Lat/Long (da anagrafica ufficiale, disponibili per 1.845 centrali su 2.254 CLLI presenti nel DB), ID Apparato, Costruttore, Modello e Scheda richiesta.</li>
+                    <li><strong>Filtro per tipo</strong>: 🔷 Tutti (default), SOLO PXM1 (esclude centrali che hanno anche PXM3), SOLO PXM3 (esclude centrali che hanno anche PXM1), PXM1+PXM3 (solo centrali con entrambe).</li>
+                    <li>I risultati mostrano Tipo (PXM1/PXM3), CLLI, Descrizione Sito, Nome Sede/Comune/Lat/Long (da anagrafica ufficiale, disponibili per 1.845 centrali su 2.254 CLLI presenti nel DB), ID Apparato, Costruttore, Modello e Scheda richiesta; il bottone 📋 su ogni riga copia i dati completi della centrale.</li>
                     <li>Seleziona una o più centrali con la <strong>checkbox</strong> di riga, oppure usa la checkbox <strong>seleziona tutto</strong> in intestazione tabella.</li>
                     <li>Il pannello <strong>✅ Selezione</strong> mostra il conteggio e i chip rimovibili (✕) delle centrali scelte; resta valido anche cambiando termine di ricerca.</li>
                     <li>Usa <strong>👁️ Mostra solo selezionate</strong> per filtrare la tabella sulle sole centrali selezionate, oppure <strong>🗑️ Svuota selezione</strong> per azzerare la scelta.</li>
+                    <li><strong>📥 Esporta Tabella (CSV)</strong> esporta esattamente le righe visualizzate in tabella (rispetta ricerca, filtro tipo e "Mostra solo selezionate").</li>
                   </ul>
-                  <p><strong>Cosa ottieni:</strong> Elenco puntuale delle centrali con scheda PXM installata e indicazione automatica del materiale da richiedere per l'accesso cliente, con possibilità di isolare un sottoinsieme di centrali di interesse tramite la selezione multipla.</p>
+                  <p><strong>Cosa ottieni:</strong> Elenco puntuale delle centrali con scheda PXM installata e indicazione automatica del materiale da richiedere per l'accesso cliente, con possibilità di isolare un sottoinsieme di centrali di interesse tramite la selezione multipla e di esportare/copiare i risultati per il proprio Studio di Fattibilità.</p>
+                  <p style="font-size:0.78rem;color:#6b7280;margin-top:0.3rem;">⚠️ <strong>Nota terminologica:</strong> la documentazione pubblica Cisco per ONS 15454 DWDM (Reference/Procedure Guide) descrive le schede di controllo nodo come TCC2/TCC2P/TCC3 (e TNC/TSC su shelf M2/M6), non "PXM"; il codice "PXM1/PXM1E" risulta ufficialmente associato alla piattaforma di switching ATM Cisco MGX 8800/8850, e non è stato trovato un prodotto Cisco "PXM3" a catalogo pubblico. Le informazioni riportate nel tab riflettono la nomenclatura e le caratteristiche indicate come riscontro di campo; il significato operativo confermato in anagrafica Netcom/TIM (4WCC/2FO/4CSM) resta in ogni caso quello descritto.</p>
                 </div>
               </details>
 
@@ -36405,7 +37003,7 @@ PERCORSI ALTERNATIVI (Div):
 <section id="docs-v112" style="margin-top:2rem; scroll-margin-top: 90px;">
   <div class="db-card">
     <div class="db-header">
-      <h3 class="db-title">🧾 Changelog – ultime revisioni (V50.07.10 → V16.31)</h3>
+      <h3 class="db-title">🧾 Changelog – ultime revisioni (V50.07.13 → V16.31)</h3>
       <p class="db-subtitle">
         Sintesi delle modifiche più recenti (focus su Analisi Costi Nord Ovest, Export Unificato, Analisi Fattibilità)
       </p>
@@ -36422,6 +37020,23 @@ PERCORSI ALTERNATIVI (Div):
       </div>
 
       <div style="display:flex;flex-direction:column;gap:0.75rem;">
+
+        <details open style="border:1px solid #d1008f;border-radius:12px;overflow:hidden;background:#fdf2f8;">
+          <summary style="cursor:pointer;padding:0.75rem 1rem;font-weight:700;font-size:0.88rem;color:#831843;display:flex;align-items:center;gap:0.5rem;background:#fce7f3;">
+            🧩 V50.07.13 — Verifica PXM: Ricerca Coordinate, Filtro Tipo, Export/Copia
+          </summary>
+          <div style="padding:0.75rem 1rem;font-size:0.82rem;color:#374151;">
+            <ul style="margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.35rem;">
+              <li><strong>📍 Ricerca per Coordinate / Indirizzo Sede Cliente</strong>: geocodifica indirizzo o Lat/Lon per trovare la centrale RA e la centrale RC più vicine e le 3 centrali PXM più vicine (algoritmo Haversine), con segnalazione se la centrale RC/RA coincide con una PXM installata.</li>
+              <li><strong>Filtro per tipo</strong>: 🔷 Tutti (default, nessun filtro), SOLO PXM1 e SOLO PXM3 (esclusivi — escludono le centrali che hanno anche l'altro tipo), PXM1+PXM3 (solo centrali con entrambe le schede); attivo sia in ricerca live sia sfogliando l'elenco completo.</li>
+              <li><strong>📥 Export CSV</strong>: "Esporta Centrali Vicine" per i risultati della ricerca per coordinate, "Esporta Tabella" per le righe visualizzate (rispetta ricerca/filtro/selezione).</li>
+              <li><strong>📋 Copia negli appunti</strong>: copia risultati "Centrali Vicine" e copia riga singola dalla tabella.</li>
+              <li><strong>Layout</strong>: pannello Note allineato in altezza al box di ricerca coordinate (spostati fuori dal layout a due colonne i box informativi e la sezione Ricerca Centrale, ora a piena larghezza); 3 card informative PXM su un'unica riga a 3 colonne.</li>
+              <li><strong>Contenuti PXM1/PXM3</strong>: nuovo box generico "Cosa sono le PXM (Processor Switch Module)"; requisiti scheda riscritti (PXM1: 4WCC+2FO, PXM3: 4WCC+4CSM) con caratteristiche generazionali sintetizzate nel testo; nota di fattibilità SdF su riutilizzo infrastruttura DWDM esistente e verifica slot liberi su NNI; elenchi puntati e blocchi di approfondimento riformattati.</li>
+              <li><strong>Titoli e sottotitoli</strong>: tab rinominato "Verifica PXM — Riutilizzo DWDM Esistente"; sezioni "Ricerca per Coordinate / Indirizzo Sede Cliente" e "Ricerca Centrale con Apparati DWDM (PXM1/3)" rietichettate per maggiore chiarezza operativa.</li>
+            </ul>
+          </div>
+        </details>
 
         <details open style="border:1px solid #d1008f;border-radius:12px;overflow:hidden;background:#fdf2f8;">
           <summary style="cursor:pointer;padding:0.75rem 1rem;font-weight:700;font-size:0.88rem;color:#831843;display:flex;align-items:center;gap:0.5rem;background:#fce7f3;">
