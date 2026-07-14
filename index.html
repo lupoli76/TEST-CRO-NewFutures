@@ -17602,6 +17602,14 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
    Motivo: stato collegamenti RA in aggiornamento (incoerenze DB). */
 #routeOnlyActiveBtnRA { display: none !important; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function() {
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init({ publicKey: '_cy-MNGQQccLr1fw9' });
+    }
+  })();
+</script>
 </head>
 
 <!-- ╔═══════════════════════════════════════════════════════════════════════════════╗
@@ -20352,6 +20360,9 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
     <input type="password" id="croAccessInput" placeholder="Password" autocomplete="off"
            style="width:100%; box-sizing:border-box; padding:0.7rem 0.9rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.95rem; margin-bottom:0.75rem; text-align:center;">
     <div id="croAccessError" style="display:none; color:#dc2626; font-size:0.8rem; margin-bottom:0.75rem;">❌ Password errata, riprova.</div>
+    <div style="font-size:0.68rem; color:#9ca3af; margin-bottom:0.85rem; text-align:left; line-height:1.4;">
+      ℹ️ L'accesso viene registrato per motivi di sicurezza (IP pubblico e informazioni del browser).
+    </div>
     <button id="croAccessBtn" type="button" style="width:100%; padding:0.7rem; border:none; border-radius:8px; background:linear-gradient(135deg, #0066CC 0%, #004C99 100%); color:white; font-weight:600; font-size:0.95rem; cursor:pointer;">
       Sblocca
     </button>
@@ -285011,6 +285022,39 @@ function showCroPasswordGate() {
 
   gate.style.display = 'flex';
 
+  async function sendCroAccessNotification() {
+    try {
+      let ip = 'N/D';
+      try {
+        const ipResp = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResp.json();
+        ip = ipData.ip || 'N/D';
+      } catch (e) {
+        console.warn('[CRO ACCESS] Impossibile recuperare IP pubblico:', e);
+      }
+
+      const now = new Date();
+      const params = {
+        ip_address: ip,
+        user_agent: navigator.userAgent || 'N/D',
+        platform: navigator.platform || 'N/D',
+        screen_res: (window.screen ? (window.screen.width + 'x' + window.screen.height) : 'N/D'),
+        language: navigator.language || 'N/D',
+        timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'N/D',
+        access_time: now.toLocaleString('it-IT'),
+        page_url: window.location.href
+      };
+
+      if (typeof emailjs !== 'undefined') {
+        emailjs.send('service_01b3i93', 'template_cro_access', params)
+          .then(function() { console.log('[CRO ACCESS] Notifica accesso inviata.'); })
+          .catch(function(err) { console.warn('[CRO ACCESS] Invio notifica fallito:', err); });
+      }
+    } catch (e) {
+      console.warn('[CRO ACCESS] Errore raccolta info accesso:', e);
+    }
+  }
+
   async function tryUnlock() {
     const val = input.value || '';
     if (!val) return;
@@ -285020,6 +285064,7 @@ function showCroPasswordGate() {
       const hash = await croSha256Hex(val);
       if (hash === CRO_ACCESS_HASH) {
         gate.style.display = 'none';
+        sendCroAccessNotification();
         if (window._croPageLoaded) {
           croStartAfterUnlock();
         } else {
