@@ -20343,6 +20343,28 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
 })();
 </script>
 
+<!-- CRO — Gate Password (solo via link, non in locale) -->
+<div id="croAccessGate" style="display:none; position:fixed; inset:0; z-index:99999; background:linear-gradient(135deg, #0B1B33 0%, #0066CC 100%); align-items:center; justify-content:center; font-family:inherit;">
+  <div style="background:white; border-radius:16px; padding:2.5rem 2.25rem; max-width:420px; width:90%; box-shadow:0 25px 60px rgba(0,0,0,0.35); text-align:center;">
+    <div style="font-size:2.5rem; margin-bottom:0.75rem;">🔒</div>
+    <div style="font-size:1.15rem; font-weight:700; color:#0B1B33; margin-bottom:0.25rem;">CRO ITALIA — Accesso riservato</div>
+    <div style="font-size:0.85rem; color:#6b7280; margin-bottom:1.5rem;">Inserisci la password per continuare</div>
+    <input type="password" id="croAccessInput" placeholder="Password" autocomplete="off"
+           style="width:100%; box-sizing:border-box; padding:0.7rem 0.9rem; border:1px solid #d1d5db; border-radius:8px; font-size:0.95rem; margin-bottom:0.75rem; text-align:center;">
+    <div id="croAccessError" style="display:none; color:#dc2626; font-size:0.8rem; margin-bottom:0.75rem;">❌ Password errata, riprova.</div>
+    <button id="croAccessBtn" type="button" style="width:100%; padding:0.7rem; border:none; border-radius:8px; background:linear-gradient(135deg, #0066CC 0%, #004C99 100%); color:white; font-weight:600; font-size:0.95rem; cursor:pointer;">
+      Sblocca
+    </button>
+    <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid #e5e7eb; text-align:left;">
+      <div style="font-size:0.78rem; font-weight:700; color:#b45309; margin-bottom:0.4rem;">⚠️ Promemoria</div>
+      <div style="font-size:0.76rem; color:#6b7280; line-height:1.5;">
+        Prima di confermare una fattibilità, verifica sempre su NNI le informazioni relative a <strong>Stato Subpath, Distanze, C-FOS</strong> e <strong>Correlate</strong>.<br><br>
+        Il tool viene aggiornato ogni 10-15 giorni: i dati mostrati potrebbero non riflettere l'ultima situazione reale della rete.
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Splash Screen -->
 <div id="introOverlay">
   <div class="intro-content">
@@ -254636,7 +254658,7 @@ var RAW_DB_RA = [
   "TipoSedeZ": 2,
   "Lat_GAT_Z": "35.862761",
   "Lon_GAT_Z": "12.862444",
-  "Distanza_km": 60.54,
+  "Distanza_km": 56.50,
   "Zona": "SI",
   "Regione": "Sicilia",
   "Area": "SUD",
@@ -254668,7 +254690,7 @@ var RAW_DB_RA = [
   "TipoSedeZ": 3,
   "Lat_GAT_Z": "35.862761",
   "Lon_GAT_Z": "12.862444",
-  "Distanza_km": 60.54,
+  "Distanza_km": 56.50,
   "Zona": "SI",
   "Regione": "Sicilia",
   "Area": "SUD",
@@ -254700,7 +254722,7 @@ var RAW_DB_RA = [
   "TipoSedeZ": 2,
   "Lat_GAT_Z": "36.837627",
   "Lon_GAT_Z": "11.954506",
-  "Distanza_km": 0,
+  "Distanza_km": 140,
   "Zona": "SI",
   "Regione": "Sicilia",
   "Area": "SUD",
@@ -254713,7 +254735,7 @@ var RAW_DB_RA = [
   "Prog (Ramo/Arco)": "9",
   "Info Extra": "[SubPath DA VERIFICARE SU NNI]",
   "OTS": "[VERIFICARE SU NNI]",
-  "Altro1": "Dati Potenzialmente NON Aggiornati. Verifica su NNI Obbligatoria in caso di SubPath NON ATTIVO.",
+  "Altro1": "Dati Potenzialmente NON Aggiornati. Distanza Aggiunta con Verifica Maps. Verifica su NNI Obbligatoria in caso di SubPath NON ATTIVO.",
   "Altro2": "[C-FOS N/D - VERIFICARE SU NNI]",
   "Note": "-"
  },
@@ -284868,7 +284890,7 @@ var RAW_DB_RA = [
 
 <script>
 // Splash screen
-window.addEventListener('load', function() {
+function startCroDataLoad() {
   // *** SCROLL TO TOP ALL'AVVIO DELLA PAGINA ***
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
@@ -284938,6 +284960,71 @@ window.addEventListener('load', function() {
       console.log('[PAGE LOAD] ✅ Initialized scope to RA');
     }
   }, 100);
+}
+
+// ── CRO — Gate password (solo via link, non in locale) ─────────────────────
+// Hash SHA-256 della password (non salvata in chiaro nel sorgente)
+var CRO_ACCESS_HASH = 'c93fd02c41277c7fcd791fab97fff9ff4c4a25325ee11d70356c9733ef898fbb';
+var CRO_SESSION_KEY = 'cro_access_unlocked';
+
+async function croSha256Hex(text) {
+  const enc = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(digest)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+function showCroPasswordGate() {
+  const gate = document.getElementById('croAccessGate');
+  const input = document.getElementById('croAccessInput');
+  const errorMsg = document.getElementById('croAccessError');
+  const btn = document.getElementById('croAccessBtn');
+  if (!gate) { startCroDataLoad(); return; }
+
+  gate.style.display = 'flex';
+
+  async function tryUnlock() {
+    const val = input.value || '';
+    if (!val) return;
+    btn.disabled = true;
+    btn.textContent = 'Verifica...';
+    try {
+      const hash = await croSha256Hex(val);
+      if (hash === CRO_ACCESS_HASH) {
+        try { sessionStorage.setItem(CRO_SESSION_KEY, 'true'); } catch (e) {}
+        gate.style.display = 'none';
+        startCroDataLoad();
+      } else {
+        errorMsg.style.display = 'block';
+        input.value = '';
+        input.focus();
+        btn.disabled = false;
+        btn.textContent = 'Sblocca';
+      }
+    } catch (e) {
+      console.error('[CRO ACCESS] Errore verifica password:', e);
+      btn.disabled = false;
+      btn.textContent = 'Sblocca';
+    }
+  }
+
+  btn.onclick = tryUnlock;
+  input.onkeydown = function(e) { if (e.key === 'Enter') tryUnlock(); };
+  setTimeout(function() { input.focus(); }, 100);
+}
+
+window.addEventListener('load', function() {
+  const isLocalFile = (window.location.protocol === 'file:');
+  let alreadyUnlocked = false;
+  try { alreadyUnlocked = (sessionStorage.getItem(CRO_SESSION_KEY) === 'true'); } catch (e) {}
+
+  if (isLocalFile || alreadyUnlocked) {
+    startCroDataLoad();
+  } else {
+    // Nascondi subito lo splash finché non si sblocca l'accesso
+    const overlay = document.getElementById('introOverlay');
+    if (overlay) overlay.style.display = 'none';
+    showCroPasswordGate();
+  }
 });
 
 // ============================================
