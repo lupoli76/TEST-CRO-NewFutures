@@ -20365,6 +20365,19 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
   </div>
 </div>
 
+<script>
+  // Esegue subito, appena il gate esiste nel DOM: nasconde lo splash e mostra
+  // il gate PRIMA che l'animazione dello splash possa avviarsi (solo accesso via link).
+  (function() {
+    var isLocalFile = (window.location.protocol === 'file:');
+    if (!isLocalFile) {
+      var gateEl = document.getElementById('croAccessGate');
+      if (gateEl) gateEl.style.display = 'flex';
+      window._croGateShownEarly = true;
+    }
+  })();
+</script>
+
 <!-- Splash Screen -->
 <div id="introOverlay">
   <div class="intro-content">
@@ -20373,6 +20386,14 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
     <div class="intro-subtitle">TIM Network Infrastructure — Rete RA & RC Italia</div>
   </div>
 </div>
+
+<script>
+  // Nasconde subito lo splash se il gate è attivo (accesso via link), prima che possa animarsi
+  if (window._croGateShownEarly) {
+    var _introEl = document.getElementById('introOverlay');
+    if (_introEl) _introEl.style.display = 'none';
+  }
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════
      MAIN APPLICATION LAYOUT
@@ -284964,8 +284985,9 @@ function startCroDataLoad() {
 
 // ── CRO — Gate password (solo via link, non in locale) ─────────────────────
 // Hash SHA-256 della password (non salvata in chiaro nel sorgente)
+// La password viene richiesta ad OGNI accesso via link (anche con un semplice refresh):
+// non viene ricordata tra un caricamento e l'altro della pagina.
 var CRO_ACCESS_HASH = 'c93fd02c41277c7fcd791fab97fff9ff4c4a25325ee11d70356c9733ef898fbb';
-var CRO_SESSION_KEY = 'cro_access_unlocked';
 
 async function croSha256Hex(text) {
   const enc = new TextEncoder().encode(text);
@@ -284973,12 +284995,19 @@ async function croSha256Hex(text) {
   return Array.from(new Uint8Array(digest)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
 }
 
+function croStartAfterUnlock() {
+  // Ripristina e avvia lo splash SOLO ora, dopo lo sblocco con password corretta
+  const overlay = document.getElementById('introOverlay');
+  if (overlay) overlay.style.display = '';
+  startCroDataLoad();
+}
+
 function showCroPasswordGate() {
   const gate = document.getElementById('croAccessGate');
   const input = document.getElementById('croAccessInput');
   const errorMsg = document.getElementById('croAccessError');
   const btn = document.getElementById('croAccessBtn');
-  if (!gate) { startCroDataLoad(); return; }
+  if (!gate) { croStartAfterUnlock(); return; }
 
   gate.style.display = 'flex';
 
@@ -284990,9 +285019,12 @@ function showCroPasswordGate() {
     try {
       const hash = await croSha256Hex(val);
       if (hash === CRO_ACCESS_HASH) {
-        try { sessionStorage.setItem(CRO_SESSION_KEY, 'true'); } catch (e) {}
         gate.style.display = 'none';
-        startCroDataLoad();
+        if (window._croPageLoaded) {
+          croStartAfterUnlock();
+        } else {
+          window.addEventListener('load', croStartAfterUnlock, { once: true });
+        }
       } else {
         errorMsg.style.display = 'block';
         input.value = '';
@@ -285014,15 +285046,13 @@ function showCroPasswordGate() {
 
 window.addEventListener('load', function() {
   const isLocalFile = (window.location.protocol === 'file:');
-  let alreadyUnlocked = false;
-  try { alreadyUnlocked = (sessionStorage.getItem(CRO_SESSION_KEY) === 'true'); } catch (e) {}
+  window._croPageLoaded = true;
 
-  if (isLocalFile || alreadyUnlocked) {
+  if (isLocalFile) {
     startCroDataLoad();
   } else {
-    // Nascondi subito lo splash finché non si sblocca l'accesso
-    const overlay = document.getElementById('introOverlay');
-    if (overlay) overlay.style.display = 'none';
+    // Gate già mostrato subito all'apertura pagina (script sincrono sopra);
+    // qui colleghiamo solo la logica di verifica password.
     showCroPasswordGate();
   }
 });
