@@ -285022,6 +285022,53 @@ function showCroPasswordGate() {
 
   gate.style.display = 'flex';
 
+  function getCroCanvasFingerprint() {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 220;
+      canvas.height = 40;
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillStyle = '#0066CC';
+      ctx.fillRect(0, 0, 220, 40);
+      ctx.fillStyle = '#f60';
+      ctx.fillText('CRO-fingerprint-🔒', 2, 2);
+      return canvas.toDataURL();
+    } catch (e) {
+      return 'canvas-nd';
+    }
+  }
+
+  function getCroWebglFingerprint() {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) return 'webgl-nd';
+      const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      const vendor = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
+      const renderer = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+      return String(vendor) + '~' + String(renderer);
+    } catch (e) {
+      return 'webgl-nd';
+    }
+  }
+
+  async function getCroDeviceFingerprint() {
+    const raw = [
+      getCroCanvasFingerprint(),
+      getCroWebglFingerprint(),
+      String(window.screen ? (window.screen.width + 'x' + window.screen.height + 'x' + window.screen.colorDepth) : ''),
+      (Intl.DateTimeFormat().resolvedOptions().timeZone) || '',
+      navigator.language || '',
+      navigator.platform || '',
+      String(navigator.hardwareConcurrency || ''),
+      navigator.userAgent || ''
+    ].join('|||');
+    const full = await croSha256Hex(raw);
+    return full.substring(0, 16); // 16 caratteri: sufficiente per distinguere dispositivi, comodo da leggere/annotare
+  }
+
   async function sendCroAccessNotification() {
     try {
       let ip = 'N/D';
@@ -285033,8 +285080,16 @@ function showCroPasswordGate() {
         console.warn('[CRO ACCESS] Impossibile recuperare IP pubblico:', e);
       }
 
+      let fingerprint = 'N/D';
+      try {
+        fingerprint = await getCroDeviceFingerprint();
+      } catch (e) {
+        console.warn('[CRO ACCESS] Impossibile generare fingerprint dispositivo:', e);
+      }
+
       const now = new Date();
       const params = {
+        device_fingerprint: fingerprint,
         ip_address: ip,
         user_agent: navigator.userAgent || 'N/D',
         platform: navigator.platform || 'N/D',
