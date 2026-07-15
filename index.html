@@ -20378,10 +20378,19 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
 
 <script>
   // Esegue subito, appena il gate esiste nel DOM: nasconde lo splash e mostra
-  // il gate PRIMA che l'animazione dello splash possa avviarsi (solo accesso via link).
+  // il gate PRIMA che l'animazione dello splash possa avviarsi (solo accesso via link,
+  // e solo se non è già stato sbloccato OGGI — la richiesta è una volta al giorno).
   (function() {
     var isLocalFile = (window.location.protocol === 'file:');
+    var unlockedToday = false;
     if (!isLocalFile) {
+      try {
+        var d = new Date();
+        var todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        unlockedToday = (localStorage.getItem('cro_access_unlock_date') === todayStr);
+      } catch (e) {}
+    }
+    if (!isLocalFile && !unlockedToday) {
       var gateEl = document.getElementById('croAccessGate');
       if (gateEl) gateEl.style.display = 'flex';
       window._croGateShownEarly = true;
@@ -284996,9 +285005,29 @@ function startCroDataLoad() {
 
 // ── CRO — Gate password (solo via link, non in locale) ─────────────────────
 // Hash SHA-256 della password (non salvata in chiaro nel sorgente)
-// La password viene richiesta ad OGNI accesso via link (anche con un semplice refresh):
-// non viene ricordata tra un caricamento e l'altro della pagina.
+// La password viene richiesta UNA VOLTA AL GIORNO (per calendario, reset a mezzanotte):
+// se sblocchi oggi, non ti viene richiesta di nuovo fino alle 00:00 del giorno successivo.
 var CRO_ACCESS_HASH = 'c93fd02c41277c7fcd791fab97fff9ff4c4a25325ee11d70356c9733ef898fbb';
+var CRO_UNLOCK_DATE_KEY = 'cro_access_unlock_date';
+
+function croTodayString() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function croIsUnlockedToday() {
+  try {
+    return localStorage.getItem(CRO_UNLOCK_DATE_KEY) === croTodayString();
+  } catch (e) {
+    return false;
+  }
+}
+
+function croMarkUnlockedToday() {
+  try {
+    localStorage.setItem(CRO_UNLOCK_DATE_KEY, croTodayString());
+  } catch (e) {}
+}
 
 async function croSha256Hex(text) {
   const enc = new TextEncoder().encode(text);
@@ -285119,6 +285148,7 @@ function showCroPasswordGate() {
       const hash = await croSha256Hex(val);
       if (hash === CRO_ACCESS_HASH) {
         gate.style.display = 'none';
+        croMarkUnlockedToday();
         sendCroAccessNotification();
         if (window._croPageLoaded) {
           croStartAfterUnlock();
@@ -285148,7 +285178,7 @@ window.addEventListener('load', function() {
   const isLocalFile = (window.location.protocol === 'file:');
   window._croPageLoaded = true;
 
-  if (isLocalFile) {
+  if (isLocalFile || croIsUnlockedToday()) {
     startCroDataLoad();
   } else {
     // Gate già mostrato subito all'apertura pagina (script sincrono sopra);
