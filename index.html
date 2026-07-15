@@ -285084,18 +285084,59 @@ function showCroPasswordGate() {
   }
 
   async function getCroDeviceFingerprint() {
+    // NOTA: userAgent e language sono volutamente ESCLUSI dal calcolo — sono legati al
+    // browser usato (cambiano tra Chrome/Edge/Firefox sullo stesso PC), non al dispositivo.
+    // Si usano solo segnali legati all'hardware fisico, stabili anche cambiando browser
+    // (Chrome/Edge condividono lo stesso motore Chromium: Canvas/WebGL restano identici).
     const raw = [
       getCroCanvasFingerprint(),
       getCroWebglFingerprint(),
       String(window.screen ? (window.screen.width + 'x' + window.screen.height + 'x' + window.screen.colorDepth) : ''),
       (Intl.DateTimeFormat().resolvedOptions().timeZone) || '',
-      navigator.language || '',
       navigator.platform || '',
-      String(navigator.hardwareConcurrency || ''),
-      navigator.userAgent || ''
+      String(navigator.hardwareConcurrency || '')
     ].join('|||');
     const full = await croSha256Hex(raw);
     return full.substring(0, 16); // 16 caratteri: sufficiente per distinguere dispositivi, comodo da leggere/annotare
+  }
+
+  function getCroIsMobile() {
+    const ua = navigator.userAgent || '';
+    return /Android|iPhone|iPad|iPod|Windows Phone|Mobile/i.test(ua) ? 'Sì' : 'No';
+  }
+
+  function getCroAudioFingerprint() {
+    // Fingerprint audio: SOLO informativo, non entra nel calcolo di device_fingerprint
+    // perché su alcuni sistemi il valore può variare leggermente tra un'esecuzione e l'altra.
+    return new Promise(function(resolve) {
+      try {
+        const AudioCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!AudioCtx) { resolve('N/D'); return; }
+        const ctx = new AudioCtx(1, 5000, 44100);
+        const oscillator = ctx.createOscillator();
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(10000, ctx.currentTime);
+        const compressor = ctx.createDynamicsCompressor();
+        oscillator.connect(compressor);
+        compressor.connect(ctx.destination);
+        oscillator.start(0);
+        ctx.startRendering();
+        const timeoutId = setTimeout(function() { resolve('N/D'); }, 1000);
+        ctx.oncomplete = function(evt) {
+          clearTimeout(timeoutId);
+          try {
+            let sum = 0;
+            const data = evt.renderedBuffer.getChannelData(0);
+            for (let i = 4500; i < 5000; i++) { sum += Math.abs(data[i]); }
+            resolve(sum.toFixed(6));
+          } catch (e) {
+            resolve('N/D');
+          }
+        };
+      } catch (e) {
+        resolve('N/D');
+      }
+    });
   }
 
   async function sendCroAccessNotification() {
@@ -285116,13 +285157,23 @@ function showCroPasswordGate() {
         console.warn('[CRO ACCESS] Impossibile generare fingerprint dispositivo:', e);
       }
 
+      let audioFp = 'N/D';
+      try {
+        audioFp = await getCroAudioFingerprint();
+      } catch (e) {
+        console.warn('[CRO ACCESS] Impossibile generare fingerprint audio:', e);
+      }
+
       const now = new Date();
       const params = {
         device_fingerprint: fingerprint,
+        audio_fingerprint: audioFp,
         ip_address: ip,
         user_agent: navigator.userAgent || 'N/D',
         platform: navigator.platform || 'N/D',
+        is_mobile: getCroIsMobile(),
         screen_res: (window.screen ? (window.screen.width + 'x' + window.screen.height) : 'N/D'),
+        screen_avail: (window.screen ? (window.screen.availWidth + 'x' + window.screen.availHeight) : 'N/D'),
         language: navigator.language || 'N/D',
         timezone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'N/D',
         access_time: now.toLocaleString('it-IT'),
