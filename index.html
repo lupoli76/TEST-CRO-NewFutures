@@ -24806,10 +24806,35 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                      type="text"
                      placeholder="Cerca in tutti i campi (Id, GAT, CLLI, Zona, Regione, Vendor...)"
                      title="La ricerca filtra automaticamente su tutti i campi visibili">
+              <button type="button" id="dbPathMultiBtn"
+                      style="padding: 4px 12px; font-size: 0.7rem; border-radius: 4px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer; font-weight: 500; margin-left: 8px;"
+                      onclick="window.toggleDbPathMultiPanel()"
+                      title="Filtra per elenco di Id Collegamento (path multiplo)">
+                🔗 Path Multiplo
+              </button>
             </div>
               <div class="db-toolbar-right">
 <button class="btn btn-secondary" type="button" onclick="resetDBFilters()">🔁 Reset</button>
               <button class="btn btn-secondary" type="button" onclick="exportDbCsv()">⬇️ Export CSV</button>
+            </div>
+          </div>
+
+          <!-- Pannello Path Multiplo -->
+          <div id="dbPathMultiPanel" style="display:none; background:#eff6ff; border:1px solid #93c5fd; border-radius:8px; padding:0.85rem 1rem; margin-top:0.5rem;">
+            <div style="font-size:0.78rem; font-weight:700; color:#1d4ed8; margin-bottom:0.4rem;">🔗 Filtro per Path Multiplo (elenco Id Collegamento)</div>
+            <div style="font-size:0.74rem; color:#4b5563; margin-bottom:0.5rem;">
+              Incolla l'elenco dei subpath in uno di questi formati (anche misti tra loro):<br>
+              <code style="font-size:0.7rem;">CLO083, CLO123, CLO006, CLO125</code> &nbsp;•&nbsp;
+              <code style="font-size:0.7rem;">CLO083+CLO123+CLO006+CLO125</code> &nbsp;•&nbsp;
+              <code style="font-size:0.7rem;">CLO083+123+006+125</code>
+            </div>
+            <textarea id="dbPathMultiInput" rows="3"
+                      placeholder="Es. CLO083, CLO123, CLO006, CLO125, CLO107, CLO148, CLO129, CLO134"
+                      style="width:100%; box-sizing:border-box; font-size:0.8rem; font-family:monospace; border:1px solid #cbd5e1; border-radius:6px; padding:0.5rem 0.65rem; resize:vertical;"></textarea>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">
+              <button id="btnDbPathMultiApply" class="btn btn-primary btn-losscalc" type="button" onclick="window.applyDbPathMulti()">🔎 Applica Filtro</button>
+              <button class="btn btn-secondary" type="button" onclick="window.clearDbPathMulti()">🔁 Pulisci</button>
+              <span id="dbPathMultiStatus" style="font-size:0.76rem; color:#4b5563;"></span>
             </div>
           </div>
 
@@ -29180,8 +29205,8 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
             var cfos = '';
             if (li+1 < lines.length) {
               var cfosNext = lines[li+1];
-              var cfosM = cfosNext.match(/([A-Z0-9]+\/[A-Z0-9]+\/C-FOS\/\d+)/);
-              if (cfosM) cfos = cfosM[1];
+              var cfosM = cfosNext.match(/[A-Z0-9]+\/[A-Z0-9]+\/C-FOS\/\d+/g);
+              if (cfosM) cfos = cfosM.join(' + ');
             }
             cur.collegamenti.push({
               tipo: 'RA',
@@ -29196,8 +29221,8 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
           if (mRC) {
             var stRC = l.match(/\[([^\]]+)\]\s*$/);
             var cfosRC = '';
-            var mCfosRC = l.match(/([A-Z0-9]+\/[A-Z0-9]+\/C-FOS\/\d+)/);
-            if (mCfosRC) cfosRC = mCfosRC[1];
+            var mCfosRC = l.match(/[A-Z0-9]+\/[A-Z0-9]+\/C-FOS\/\d+/g);
+            if (mCfosRC) cfosRC = mCfosRC.join(' + ');
             cur.collegamenti.push({
               tipo: 'RC',
               id: mRC[1].trim(),
@@ -30041,6 +30066,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
         }
       }
       if (nstDiversif && divStr) fcText += '\n' + divStr;
+      if (nstKmz) fcText += '\n\nIn allegato documento .docx con i dati tecnici necessari alla creazione del file KMZ (centrali, collegamenti, C-FOS).';
       if (fcEl) fcEl.textContent = fcText;
 
       // Nota Lavorante: riga vuota tra parti, IMPORTANTE con ***
@@ -30518,6 +30544,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                 '<button onclick="kmzAddCollegRC('+blk.id+')" style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;border:1px solid #dc2626;background:#fef2f2;color:#dc2626;cursor:pointer;">+ RC</button>' +
                 '<button onclick="kmzAddSepCL('+blk.id+',\'RA\u2194RC\')" style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;border:1px solid #dc2626;background:#fef2f2;color:#dc2626;cursor:pointer;">+ RA↔RC</button>' +
                 '<button onclick="kmzAddSepCL('+blk.id+',\'RA\u2194RA\')" style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;border:1px solid #0066CC;background:#eff6ff;color:#0066CC;cursor:pointer;">+ RA↔RA</button>' +
+                '<button onclick="kmzAddSepCL('+blk.id+',\'RC\u2194RA\')" style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;border:1px solid #7c3aed;background:#f5f3ff;color:#7c3aed;cursor:pointer;">+ RC↔RA</button>' +
                 '<button onclick="kmzAddCollegRCInline('+blk.id+')" style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:4px;border:1px solid #dc2626;background:#fef2f2;color:#dc2626;cursor:pointer;" title="RC formato: [RC] ID • CLLI/CLLI/C-FOS/NNNNN">+ RC inline</button>' +
               '</div>' +
               '<div id="kmz_colleg_'+blk.id+'" style="display:flex;flex-direction:column;gap:0.3rem;"></div>' +
@@ -36782,7 +36809,7 @@ PERCORSI ALTERNATIVI (Div):
                   </ul>
                   <p><strong>Guida campi Dati Servizio:</strong> Nella parte bassa del tab trovi la descrizione completa di tutti gli 11 campi NNI/IRP con valori ammessi, dipendenze e 26 esempi reali da SdF lavorati organizzati in 6 categorie (A: Base, B: MPLS, C: Protetto, D: DH+Div, E: Alice Business, F: Revisione/Vincoli speciali).</p>
                   <p><strong>📝 Generatore Note Standard IRP — Trasporto DWDM:</strong> Sezione dedicata alla generazione automatica delle note tecniche per IRP. Configura rete (RA/RC), velocità, rigeneratori e nodi intermedi; il tool produce la nota TI (una riga per segmento con prefisso RA:/RC: e gestione automatica singolare/plurale per subpath non attivi) e la nota generale di trasporto, con anteprima schematica del percorso.</p>
-                  <p><strong>🗺️ Generatore Info KMZ:</strong> Sezione per la composizione e il download del documento .docx «Info per KMZ» da allegare alla richiesta del file KMZ al team FOL/RTN. Scegli la modalità operativa: <em>Più SdF</em> (un blocco distinto per ogni pratica SF con propri dati di intestazione, CENTRALI e COLLEGAMENTI) oppure <em>SdF con Vie Diversificate</em> (un solo SdF con PRIMA VIA / SECONDA VIA DIVERSIFICATA/PROTETTA — il testo delle note corpo include automaticamente la frase di diversificazione fisica). La sezione CENTRALI supporta righe Centrale (Nome, CLLI, Grado) e separatori RA↔RC / RA↔RA / RC↔RA; la sezione COLLEGAMENTI supporta tipo RA (4 campi separati o stringa libera, toggle ≡ campi / ≡ testo), tipo RC (con C-FOS indentata), tipo RC inline. Il .docx viene generato interamente nel browser via JSZip.</p>
+                  <p><strong>🗺️ Generatore Info KMZ:</strong> Sezione per la composizione e il download del documento .docx «Info per KMZ» da allegare alla richiesta del file KMZ al team FOL/RTN. Scegli la modalità operativa: <em>Più SdF</em> (un blocco distinto per ogni pratica SF con propri dati di intestazione, CENTRALI e COLLEGAMENTI) oppure <em>SdF con Vie Diversificate</em> (un solo SdF con PRIMA VIA / SECONDA VIA DIVERSIFICATA/PROTETTA — il testo delle note corpo include automaticamente la frase di diversificazione fisica). La sezione CENTRALI supporta righe Centrale (Nome, CLLI, Grado) e separatori RA↔RC / RA↔RA / RC↔RA; la sezione COLLEGAMENTI supporta tipo RA (4 campi separati o stringa libera, toggle ≡ campi / ≡ testo), tipo RC (con C-FOS indentata), tipo RC inline e separatori RA↔RC / RA↔RA / RC↔RA. Il .docx viene generato interamente nel browser via JSZip.</p>
                 </div>
               </details>
 
@@ -37201,7 +37228,7 @@ PERCORSI ALTERNATIVI (Div):
             <ul class="docs-list">
               <li><strong>🗺️ NUOVA SEZIONE — "🗺️ Generatore Info KMZ"</strong>: maschera per comporre e scaricare il documento .docx Info KMZ. Modalità <em>Più SdF</em> (blocco indipendente per ogni pratica) e <em>Vie Diversificate</em> (PRIMA VIA / SECONDA VIA con nota diversificazione automatica nel corpo). Genera .docx client-side via JSZip senza server</li>
               <li><strong>🏗️ Sezione CENTRALI</strong>: righe con Nome, CLLI (auto uppercase), Grado (T1/T2/T3); separatori <strong>RA↔RC</strong>, <strong>RA↔RA</strong>, <strong>RC↔RA</strong> (nuovo); numerazione progressiva sequenziale che si azzera ad ogni separatore sia a video che nel .docx</li>
-              <li><strong>🔗 Sezione COLLEGAMENTI</strong>: tipo RA con doppia modalità input — 4 campi separati (arco | MU | AMU | N) oppure stringa unica (toggle ≡ campi / ≡ testo con migrazione dati); tipo RC (ID + C-FOS indentato); tipo RC inline (ID • C-FOS su una riga); separatori RA↔RC / RA↔RA</li>
+              <li><strong>🔗 Sezione COLLEGAMENTI</strong>: tipo RA con doppia modalità input — 4 campi separati (arco | MU | AMU | N) oppure stringa unica (toggle ≡ campi / ≡ testo con migrazione dati); tipo RC (ID + C-FOS indentato); tipo RC inline (ID • C-FOS su una riga); separatori RA↔RC / RA↔RA / RC↔RA</li>
               <li><strong>📄 Struttura .docx corretta</strong>: righe vuote di separazione tra titolo SF, Descrizione Progetto, note corpo, CENTRALI e COLLEGAMENTI — identica agli esempi di riferimento</li>
               <li><strong>🎨 Tabella HW Huawei</strong>: righe RA in blu (#eff6ff, bordi #bfdbfe), righe RC in rosso (#fef2f2, bordi #fecaca), header grigio neutro (#d1d5db) — allineati alla convenzione cromatica del tool</li>
             </ul>
@@ -288341,6 +288368,7 @@ let dbState = null;
   
   dbState = {
     query: '',
+    pathCodes: [],
     statusFilters: { 'ATTIVO': true, 'NON ATTIVO': true, 'IN ATTIVAZIONE': true, 'IN VARIAZIONE': true, 'IN REINSTRADAMENTO': true, 'DA VERIFICARE SU NNI': true, 'MISTO': true, 'IN CESSAZIONE': true },
     page: 1,
     pageSize: 50,
@@ -288561,6 +288589,11 @@ let dbState = null;
         }
       }
       
+      if (dbState.pathCodes && dbState.pathCodes.length) {
+        const rowId = String(row.id || '').trim().toUpperCase();
+        return dbState.pathCodes.includes(rowId);
+      }
+
       if (!q) return true;
       const fields = [
         row.id, row.stato, row.vendor,
@@ -288752,6 +288785,77 @@ let dbState = null;
     renderDbTable();
   };
 
+  // ── Filtro Path Multiplo (elenco Id Collegamento in vari formati) ─────────
+  window.parseDbPathCodes = function(text) {
+    if (!text) return [];
+    // Divide su virgola, "+" e spazi/a-capo
+    const tokens = text.split(/[,+\n\r]+/).map(t => t.trim()).filter(Boolean);
+    if (!tokens.length) return [];
+
+    // Individua prefisso alfabetico + lunghezza cifre dal primo token completo (es. "CLO083" -> "CLO", 3 cifre)
+    let prefix = '';
+    let digitLen = 0;
+    const firstMatch = tokens[0].match(/^([A-Za-z]+)(\d+)$/);
+    if (firstMatch) {
+      prefix = firstMatch[1].toUpperCase();
+      digitLen = firstMatch[2].length;
+    }
+
+    const codes = tokens.map(function(tok) {
+      const full = tok.match(/^([A-Za-z]+)(\d+)$/);
+      if (full) {
+        // Token già completo (es. "CLO123") — normalizza a maiuscolo
+        return (full[1].toUpperCase() + full[2]);
+      }
+      // Token solo numerico (es. "123", "006") — ricompone con prefisso/lunghezza del primo token
+      const digitsOnly = tok.match(/^\d+$/);
+      if (digitsOnly && prefix) {
+        const padded = digitLen ? tok.padStart(digitLen, '0') : tok;
+        return prefix + padded;
+      }
+      // Fallback: token non riconosciuto, restituisci così com'è (maiuscolo)
+      return tok.toUpperCase();
+    });
+
+    // Rimuovi duplicati mantenendo l'ordine
+    return codes.filter(function(c, i) { return codes.indexOf(c) === i; });
+  };
+
+  window.toggleDbPathMultiPanel = function() {
+    const panel = document.getElementById('dbPathMultiPanel');
+    const btn = document.getElementById('dbPathMultiBtn');
+    if (!panel) return;
+    const show = panel.style.display === 'none';
+    panel.style.display = show ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = show ? '#1d4ed8' : '#eff6ff';
+      btn.style.color = show ? 'white' : '#1d4ed8';
+    }
+  };
+
+  window.applyDbPathMulti = function() {
+    const input = document.getElementById('dbPathMultiInput');
+    const status = document.getElementById('dbPathMultiStatus');
+    const codes = window.parseDbPathCodes(input ? input.value : '');
+    dbState.pathCodes = codes;
+    dbState.page = 1;
+    if (status) {
+      status.textContent = codes.length
+        ? '✅ Filtro attivo su ' + codes.length + ' Id Collegamento: ' + codes.join(', ')
+        : '⚠️ Nessun codice riconosciuto nel testo incollato.';
+    }
+    if (typeof renderDbTable === 'function') renderDbTable();
+  };
+
+  window.clearDbPathMulti = function(silent) {
+    const input = document.getElementById('dbPathMultiInput');
+    const status = document.getElementById('dbPathMultiStatus');
+    if (input) input.value = '';
+    if (status) status.textContent = '';
+    dbState.pathCodes = [];
+    if (!silent && typeof renderDbTable === 'function') renderDbTable();
+  };
+
   window.resetDBFilters = function() {
     const searchInput = document.getElementById('dbSearchInput');
     const onlyActiveBtn = document.getElementById('dbOnlyActiveBtn');
@@ -288759,6 +288863,8 @@ let dbState = null;
     if (searchInput) searchInput.value = '';
 
     dbState.query = '';
+    dbState.pathCodes = [];
+    if (typeof window.clearDbPathMulti === 'function') window.clearDbPathMulti(true);
     dbState.statusFilters = { 'ATTIVO': true, 'NON ATTIVO': true, 'IN ATTIVAZIONE': true, 'IN VARIAZIONE': true, 'IN REINSTRADAMENTO': true, 'DA VERIFICARE SU NNI': true, 'MISTO': true, 'IN CESSAZIONE': true }; 
     
     // Reset filtri stato RC
@@ -307418,7 +307524,8 @@ function fillFilterSelects() {
    ========================================================= */
 /* SOLO bottone Calcola Attenuazione: PIATTO (no gradienti, no ombre) */
 #btnLossCalc.btn-losscalc,
-#btnCorrelaFile.btn-losscalc{
+#btnCorrelaFile.btn-losscalc,
+#btnDbPathMultiApply.btn-losscalc{
   /* Shorthand che azzera anche eventuali gradienti */
   background: var(--tim-blue) !important;
 
@@ -307436,7 +307543,8 @@ function fillFilterSelects() {
 }
 
 #btnLossCalc.btn-losscalc:hover,
-#btnCorrelaFile.btn-losscalc:hover{
+#btnCorrelaFile.btn-losscalc:hover,
+#btnDbPathMultiApply.btn-losscalc:hover{
   background: var(--tim-blue-dark) !important;
   background-image: none !important;
   box-shadow: none !important;
@@ -307445,7 +307553,8 @@ function fillFilterSelects() {
 }
 
 #btnLossCalc.btn-losscalc:active,
-#btnCorrelaFile.btn-losscalc:active{
+#btnCorrelaFile.btn-losscalc:active,
+#btnDbPathMultiApply.btn-losscalc:active{
   background: var(--tim-blue-dark) !important;
   background-image: none !important;
   box-shadow: none !important;
