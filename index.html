@@ -4,13 +4,31 @@
 ╔══════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                  ║
 ║   CRO ITALIA - Central Routing Optimizer                                         ║
-║   Versione: 11.26 | 188  (rev. pubblicata: V11.26 | 188 | Nov 2026)              ║
+║   Versione: 11.26 | 190  (rev. pubblicata: V11.26 | 190 | Nov 2026)              ║
 ║   Data: 8 Ottobre 2026                                                           ║
 ║                                                                                  ║
 ║   Tool enterprise per ottimizzazione percorsi rete TIM                           ║
 ║   Sviluppato con Design System unificato                                         ║
 ║                                                                                  ║
 ╠══════════════════════════════════════════════════════════════════════════════════╣
+║                                                                                  ║
+║   CHANGELOG V11.26 | 190 | Nov 2026:                                             ║
+║   ──────────────────────────                                                     ║
+║   • TV E RADIO: la finestra a parte mostra solo il video: player del CRO per     ║
+║     i canali incorporabili, player essenziale di YouTube (watch_popup) per       ║
+║     Sky TG24, Radio Italia video e Lofi Girl; link della diretta incollato       ║
+║     una volta sola e ricordato; Cambia link; finestra 16:9                       ║
+║                                                                                  ║
+║   CHANGELOG V11.26 | 189 | Nov 2026:                                             ║
+║   ──────────────────────────                                                     ║
+║   • TV E RADIO: solo canali italiani (tolti Sky News, Al Jazeera, DW, France     ║
+║     24, Euronews English, Bloomberg, NASA e BBC World Service); Sky TG24,        ║
+║     Radio Italia video e Lofi Girl in una finestra a parte del browser           ║
+║     (Picture in picture); bottone Apri in finestra per ogni canale bloccato      ║
+║   • X di chiusura sempre visibile; barra che non esce dalla finestrella          ║
+║   • I miei canali: si incolla il link di una diretta YouTube                     ║
+║   • Radio: piu' nomi di ricerca, flussi http richiamati in https, HLS con        ║
+║     hls.js da cdnjs                                                              ║
 ║                                                                                  ║
 ║   CHANGELOG V11.26 | 188 | Nov 2026:                                             ║
 ║   ──────────────────────────                                                     ║
@@ -7465,7 +7483,7 @@ window.croChat = (function () {
         var cc = croTV.apri(tvCh ? tvCh.id : (/RADIO/.test(q) && !croTV.aperta() ? 'radio24' : null));
         var nR = croTV.canali.filter(function (c) { return c.t === 'radio'; }).length, nV = croTV.canali.filter(function (c) { return c.t === 'yt'; }).length;
         if (cc && cc.t === 'na') return '<h6>\uD83D\uDCFA ' + esc(cc.n) + '</h6><div class="cc-card">Non si pu\u00f2 vedere dentro il CRO: ' + esc(cc.perche) + '. Ho aperto il sito in una nuova scheda.</div>';
-        return '<h6>\uD83D\uDCFA ' + esc(cc ? cc.n : 'TV') + '</h6><div class="cc-card">Acceso nella finestrella sopra la striscia Info live' + (cc && cc.t === 'yt' ? ', senza audio' : ', solo audio') + '. Passa con il mouse sulla finestrella: in alto ci sono canale precedente e successivo, l\u2019elenco per genere (' + nV + ' dirette video e ' + nR + ' radio), l\u2019audio, la trasparenza, il tutto schermo e la chiusura. Si sposta trascinando la barra in alto e si allarga dagli angoli in basso.</div>';
+        return '<h6>\uD83D\uDCFA ' + esc(cc ? cc.n : 'TV') + '</h6><div class="cc-card">' + (cc && cc.fin ? 'Questo canale non si lascia mettere dentro altre pagine: l\u2019ho aperto in una finestra a parte del browser (se non la vedi, consenti i popup per questo sito). Per tenerlo sempre davanti: clic destro due volte sul video e \u00abPicture in picture\u00bb' : 'Acceso nella finestrella sopra la striscia Info live' + (cc && cc.t === 'yt' ? ', senza audio' : ', solo audio')) + '. Passa con il mouse sulla finestrella: in alto ci sono canale precedente e successivo, l\u2019elenco per genere (' + nV + ' dirette video e ' + nR + ' radio), l\u2019audio, la trasparenza, il tutto schermo e la chiusura. Si sposta trascinando la barra in alto e si allarga dagli angoli in basso.</div>';
       }
     }
     /* V10.26|104: comandi per la striscia delle info live */
@@ -12333,7 +12351,7 @@ window.croDom = (function () {
     barra.innerHTML = '<div class="cil-testa"><span class="cil-led"></span>INFO LIVE</div>'
       + '<div class="cil-vista"><div class="cil-nastro"></div></div>'
       /* V10.26|151: comandi ridisegnati: ora con l'orologio, velocita' in un gruppo, aggiorna e fonti, chiudi a parte */
-      + '<div class="cil-comandi"><button type="button" data-cil="tv" class="cil-tv" title="TV e radio in una finestrella (Sky TG24 senza audio)" aria-label="TV e radio">\uD83D\uDCFA TV</button><span class="cil-sep"></span><span class="cil-ora" title="Ultimo aggiornamento delle notizie"></span>'   /* V11.26|188: bottone TV */
+      + '<div class="cil-comandi"><button type="button" data-cil="tv" class="cil-tv" title="TV e radio in una finestrella: Sky TG24, Euronews, radio italiane" aria-label="TV e radio">\uD83D\uDCFA TV</button><span class="cil-sep"></span><span class="cil-ora" title="Ultimo aggiornamento delle notizie"></span>'   /* V11.26|188: bottone TV */
       + '<span class="cil-gruppo" role="group" aria-label="Scorrimento">'
       + '<button type="button" data-cil="lento" title="Pi\u00f9 lento" aria-label="Pi\u00f9 lento">' + ICO.lento + '</button>'
       + '<button type="button" data-cil="pausa" title="Ferma lo scorrimento" aria-label="Ferma lo scorrimento">' + ICO.pausa + '</button>'
@@ -12386,7 +12404,7 @@ window.croDom = (function () {
 
 /* [[CRO:MOD-188-TV]] dentro [[CRO:JS-NUCLEO]]: TV e radio in una finestrella */
 /* ═══════════════════════════════════════════════════════════════════════════
-   V11.26|188 · TV E RADIO
+   V11.26|188-190 · TV E RADIO
    Finestrella sopra la striscia Info live: dirette YouTube (Sky TG24 di
    partenza, senza audio) e radio in solo audio. Si sposta dalla barra in
    alto, si ridimensiona dagli angoli in basso, va a tutto schermo e ha la
@@ -12401,27 +12419,20 @@ window.croDom = (function () {
 (function () {
   'use strict';
   var CANALI = [
-    /* dirette YouTube: id del canale verificati il 21-22/11/2026 */
-    { id: 'skytg24', n: 'Sky TG24', g: 'Notizie Italia', t: 'yt', yt: 'UCz6E3lF72mb6uoJ-mOlNo2A', al: ['TG24', 'SKY TG 24'] },
+    /* dirette YouTube: id del canale verificati il 21-22/11/2026. V11.26|189: solo canali italiani;
+       fin: il canale non si lascia mettere dentro altre pagine, si apre in una finestra a parte */
+    { id: 'skytg24', n: 'Sky TG24', g: 'Notizie Italia', t: 'yt', yt: 'UCz6E3lF72mb6uoJ-mOlNo2A', fin: true, al: ['TG24', 'SKY TG 24'] },
     { id: 'euronewsit', n: 'Euronews Italiano', g: 'Notizie Italia', t: 'yt', yt: 'UC1mX9vuLOYf8fhaXS_KcDRg', al: ['EURONEWS'] },
-    { id: 'skynews', n: 'Sky News', g: 'Notizie dal mondo', t: 'yt', yt: 'UCoMdktPbSTixAyNGwb-UYkQ' },
-    { id: 'aljazeera', n: 'Al Jazeera English', g: 'Notizie dal mondo', t: 'yt', yt: 'UCNye-wNBqNL5ZzHSJj3l8Bg', al: ['AL JAZEERA'] },
-    { id: 'dw', n: 'DW News', g: 'Notizie dal mondo', t: 'yt', yt: 'UCknLrEdhRCp1aegoMqRaCZg', al: ['DW'] },
-    { id: 'france24en', n: 'France 24 English', g: 'Notizie dal mondo', t: 'yt', yt: 'UCQfwfsi5VrQ8yKZ-UWmAEFg', al: ['FRANCE 24'] },
-    { id: 'france24fr', n: 'France 24 Français', g: 'Notizie dal mondo', t: 'yt', yt: 'UCCCPCZNChQdGa9EkATeye4g' },
-    { id: 'euronewsen', n: 'Euronews English', g: 'Notizie dal mondo', t: 'yt', yt: 'UCSrZ3UV4jOidv8ppoVuvW9Q' },
-    { id: 'bloomberg', n: 'Bloomberg', g: 'Economia', t: 'yt', yt: 'UCIALMKvObZNtJ6AmdCLP7Lg' },
     { id: 'rtlvideo', n: 'RTL 102.5 (video)', g: 'Musica in video', t: 'yt', yt: 'UCdRQAy9c5cJ4oQG_US3qq-g' },
-    { id: 'radioitaliavideo', n: 'Radio Italia (video)', g: 'Musica in video', t: 'yt', yt: 'UCqxWYf1b5068EQvP22Rvr5Q' },
-    { id: 'lofi', n: 'Lofi Girl', g: 'Musica in video', t: 'yt', yt: 'UCSJ4gkVC6NrvII8umztf0Ow', al: ['LOFI'] },
-    { id: 'nasa', n: 'NASA', g: 'Scienza e spazio', t: 'yt', yt: 'UCLA_DiR1FfKNvjuUpBHmylQ' },
+    { id: 'radioitaliavideo', n: 'Radio Italia (video)', g: 'Musica in video', t: 'yt', yt: 'UCqxWYf1b5068EQvP22Rvr5Q', fin: true },
+    { id: 'lofi', n: 'Lofi Girl', g: 'Musica in video', t: 'yt', yt: 'UCSJ4gkVC6NrvII8umztf0Ow', fin: true, al: ['LOFI'] },
     /* radio: solo il nome; il flusso si cerca in radio-browser.info */
-    { id: 'radio24', n: 'Radio 24', g: 'Radio notizie e Parlamento', t: 'radio', q: 'Radio 24' },
-    { id: 'rairadio1', n: 'Rai Radio 1', g: 'Radio notizie e Parlamento', t: 'radio', q: 'Rai Radio 1' },
+    { id: 'radio24', n: 'Radio 24', g: 'Radio notizie e Parlamento', t: 'radio', q: ['Radio 24', 'Radio24'] },
+    { id: 'rairadio1', n: 'Rai Radio 1', g: 'Radio notizie e Parlamento', t: 'radio', q: ['Rai Radio 1', 'Radio1'] },
     { id: 'grparlamento', n: 'Rai GR Parlamento', g: 'Radio notizie e Parlamento', t: 'radio', q: 'GR Parlamento' },
     { id: 'radioradicale', n: 'Radio Radicale', g: 'Radio notizie e Parlamento', t: 'radio', q: 'Radio Radicale' },
     { id: 'isoradio', n: 'Rai Isoradio', g: 'Radio notizie e Parlamento', t: 'radio', q: 'Isoradio' },
-    { id: 'rairadio2', n: 'Rai Radio 2', g: 'Radio musica', t: 'radio', q: 'Rai Radio 2' },
+    { id: 'rairadio2', n: 'Rai Radio 2', g: 'Radio musica', t: 'radio', q: ['Rai Radio 2', 'Radio2'] },
     { id: 'rtl1025', n: 'RTL 102.5', g: 'Radio musica', t: 'radio', q: 'RTL 102.5', al: ['RTL'] },
     { id: 'rds', n: 'RDS', g: 'Radio musica', t: 'radio', q: 'RDS' },
     { id: 'deejay', n: 'Radio Deejay', g: 'Radio musica', t: 'radio', q: 'Radio Deejay', al: ['DEEJAY'] },
@@ -12436,23 +12447,36 @@ window.croDom = (function () {
     { id: 'freccia', n: 'Radio Freccia', g: 'Radio musica', t: 'radio', q: 'Radio Freccia' },
     { id: 'zeta', n: 'Radio Zeta', g: 'Radio musica', t: 'radio', q: 'Radio Zeta' },
     { id: 'radioitalia', n: 'Radio Italia', g: 'Radio musica', t: 'radio', q: 'Radio Italia Solo Musica Italiana', al: ['RADIO ITALIA'] },
-    { id: 'rairadio3', n: 'Rai Radio 3', g: 'Radio cultura e classica', t: 'radio', q: 'Rai Radio 3' },
+    { id: 'rairadio3', n: 'Rai Radio 3', g: 'Radio cultura e classica', t: 'radio', q: ['Rai Radio 3', 'Radio3'] },
     { id: 'classica', n: 'Radio Classica', g: 'Radio cultura e classica', t: 'radio', q: 'Radio Classica' },
     { id: 'sportiva', n: 'Radio Sportiva', g: 'Radio sport', t: 'radio', q: 'Radio Sportiva' },
-    { id: 'bbcws', n: 'BBC World Service', g: 'Radio dal mondo', t: 'radio', q: 'BBC World Service', cc: 'GB' },
     /* non si possono mettere dentro il CRO: si aprono nel loro sito */
     { id: 'rainews', n: 'Rai (RaiNews24 e canali Rai)', g: 'Solo nel loro sito', t: 'na', url: 'https://www.raiplay.it', perche: 'RaiPlay non permette di mettere le dirette dentro altre pagine' },
     { id: 'tgcom', n: 'Mediaset (TgCom24 e canali Mediaset)', g: 'Solo nel loro sito', t: 'na', url: 'https://mediasetinfinity.mediaset.it', perche: 'Mediaset Infinity non permette di mettere le dirette dentro altre pagine' },
     { id: 'la7', n: 'La7', g: 'Solo nel loro sito', t: 'na', url: 'https://www.la7.it', perche: 'La7 non permette di mettere la diretta dentro altre pagine' },
     { id: 'tv8', n: 'TV8 e Cielo', g: 'Solo nel loro sito', t: 'na', url: 'https://www.tv8.it', perche: 'la diretta è solo nel sito del canale' }
   ];
-  var PARTENZA = 'skytg24', CHIAVE = 'croTv', CHIAVE_R = 'croTvRadio', CHIAVE_KO = 'croTvKo';
+  var PARTENZA = 'skytg24', CHIAVE = 'croTv', CHIAVE_R = 'croTvRadio', CHIAVE_KO = 'croTvKo', CHIAVE_MIEI = 'croTvMiei';
+  /* V11.26|189: si riparte da zero con i controlli e i flussi (cercati in modo nuovo) */
+  try { if (localStorage.getItem('croTvVer') !== '189') { localStorage.removeItem('croTvKo'); localStorage.removeItem('croTvRadio'); localStorage.setItem('croTvVer', '189'); } } catch (e) {}
+  /* V11.26|189: canali aggiunti a mano (link di una diretta YouTube) */
+  function miei() { return (leggi(CHIAVE_MIEI) || []).map(function (m) { return { id: m.id, n: m.n, g: 'I miei canali', t: 'yt', yt: m.yt, vid: m.vid, mio: true }; }); }
+  function rifaiMiei() { for (var i = CANALI.length - 1; i >= 0; i--) if (CANALI[i].mio) CANALI.splice(i, 1); var k = 0; while (k < CANALI.length && CANALI[k].t === 'yt') k++; Array.prototype.splice.apply(CANALI, [k, 0].concat(miei())); }
+  function capisciLink(t) {
+    t = String(t || '').trim(); var m;
+    if ((m = /(?:[?&]v=|youtu\.be\/|\/live\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/.exec(t))) return { vid: m[1] };
+    if ((m = /(?:\/channel\/|^)(UC[A-Za-z0-9_-]{22})(?![A-Za-z0-9_-])/.exec(t))) return { yt: m[1] };
+    if (/@[A-Za-z0-9._-]+/.test(t)) return { err: 'con l\u2019indirizzo @nome YouTube non dice quale diretta: apri la diretta e copia il link del video (youtube.com/watch?v=\u2026 oppure youtube.com/live/\u2026)' };
+    return { err: 'non riconosco il link: serve quello di una diretta (youtube.com/watch?v=\u2026, youtube.com/live/\u2026, youtu.be/\u2026) o di un canale (youtube.com/channel/UC\u2026)' };
+  }
   var ERRORI = { 2: 'indirizzo del canale non valido', 5: 'il browser non riesce a riprodurre questo video', 100: 'nessuna diretta in onda adesso, oppure canale privato', 101: 'il canale non permette di vedere la diretta dentro altre pagine', 150: 'il canale non permette di vedere la diretta dentro altre pagine', 153: 'YouTube vuole sapere da quale sito arriva la richiesta: aperto come file dal PC non sempre funziona (dal sito o dal NAS sì)' };
+  var pop = null;
   var w, menu, schermo, cur = null, stato = {}, ui = leggi(CHIAVE) || {}, audio = null, muto = true, ytOk = false, tPrima = null, giro = 0;
   function leggi(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function scrivi(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function nn(t) { return String(t || '').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Z0-9]/g, ''); }
+  rifaiMiei();
   function canale(id) { for (var i = 0; i < CANALI.length; i++) if (CANALI[i].id === id) return CANALI[i]; return null; }
   function suonabili() { return CANALI.filter(function (c) { return c.t !== 'na'; }); }
   (function () { var ko = leggi(CHIAVE_KO) || {}, ora = Date.now(); Object.keys(ko).forEach(function (k) { if (ora - ko[k].ts < 6 * 3600e3) stato[k] = { ko: ko[k].ko }; }); })();
@@ -12472,6 +12496,7 @@ window.croDom = (function () {
       tutto: a + '<path d="M2.8 6V2.8H6M10 2.8h3.2V6M13.2 10v3.2H10M6 13.2H2.8V10"/>' + z,
       esci: a + '<path d="M6 2.8V6H2.8M13.2 6H10V2.8M10 13.2V10h3.2M2.8 10H6v3.2"/>' + z,
       chiudi: a + '<path d="M4.6 4.6l6.8 6.8M11.4 4.6l-6.8 6.8"/>' + z,
+      finestra: a + '<rect x="2.5" y="4.5" width="9" height="9" rx="1.2"/><path d="M6.5 2.5h7v7M13.5 2.5L8 8"/>' + z,
       op: a + '<circle cx="8" cy="8" r="5.4"/><path d="M8 2.6v10.8" /><path d="M8 4.5h3.6M8 7h5M8 9.5h4.6M8 12h3" stroke-width="1.1"/>' + z
     };
   })();
@@ -12486,7 +12511,13 @@ window.croDom = (function () {
       + '#croTv .ctv-nome small{font-weight:400;color:#94a3b8;margin-left:5px}'
       + '#croTv button{display:inline-flex;align-items:center;justify-content:center;width:24px;height:22px;padding:0;border:0;border-radius:5px;background:transparent;color:#cbd5e1;cursor:pointer;flex:none}'
       + '#croTv button:hover{background:rgba(255,255,255,.16);color:#fff}#croTv button:focus-visible{outline:2px solid #3b82f6}#croTv button.on{color:#7cb8ff}'
-      + '#croTv button[data-tv=chiudi]:hover{background:#b91c1c}'
+      + '#croTv .ctv-barra{padding-right:34px;overflow:hidden}#croTv .ctv-op input{width:64px!important;min-width:0!important;max-width:64px!important;flex:none;padding:0!important;margin:0!important}'
+      + '#croTv .ctv-x{position:absolute;top:5px;right:6px;z-index:5;width:24px;height:22px;background:rgba(2,6,23,.55)!important;color:#e2e8f0!important;opacity:.85}#croTv .ctv-x:hover{background:#b91c1c!important;color:#fff!important;opacity:1}'
+      + '#croTvMenu .ctv-v .pt.fi{background:#3b82f6}#croTvMenu .ctv-v .del{margin-left:4px;color:#64748b;padding:0 4px;border-radius:4px}#croTvMenu .ctv-v .del:hover{background:#b91c1c;color:#fff}'
+      + '#croTvMenu .ctv-ag{padding:7px 8px;border-top:1px solid #1e293b;display:grid;grid-template-columns:1fr 92px auto;gap:5px}#croTvMenu .ctv-ag input{text-transform:none!important;min-width:0;border:1px solid #334155;background:#020617;color:#e2e8f0;border-radius:6px;padding:4px 7px;font-size:11.5px;outline:0}#croTvMenu .ctv-ag input:focus{border-color:#3b82f6}'
+      + '#croTvMenu .ctv-ag button{border:1px solid #2563eb;background:#1d4ed8;color:#fff;border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600;cursor:pointer}#croTvMenu .ctv-ag small{grid-column:1/-1;color:#94a3b8;font-size:10.5px;min-height:0}#croTvMenu .ctv-ag small.err{color:#fca5a5}'
+      + '#croTv .ctv-msg .ctv-id{display:flex;gap:5px;width:min(360px,92%)}#croTv .ctv-msg .ctv-id input{flex:1;min-width:0;text-transform:none!important;border:1px solid #334155;background:#020617;color:#e2e8f0;border-radius:6px;padding:4px 7px;font-size:11.5px;outline:0;user-select:text}#croTv .ctv-msg .ctv-id button{width:auto;height:auto;padding:4px 10px;border:1px solid #2563eb;background:#1d4ed8;color:#fff;border-radius:6px;font-size:11.5px;font-weight:600}#croTv .ctv-iderr{color:#fca5a5;font-size:11px;min-height:0}'
+      + '#croTv .ctv-msg .ctv-az{flex-wrap:wrap;justify-content:center}#croTv .ctv-msg .ctv-az button.pri{background:#1d4ed8;border-color:#2563eb;color:#fff}'
       + '#croTv .ctv-op{display:none;align-items:center;gap:4px;margin:0 2px}#croTv .ctv-op.on{display:inline-flex}#croTv .ctv-op input{width:70px;height:14px;accent-color:#3b82f6;cursor:pointer}#croTv .ctv-op span{min-width:28px;font-size:10.5px;color:#94a3b8;text-align:right}'
       + '#croTv .ctv-rs{position:absolute;bottom:0;width:16px;height:16px;z-index:4;opacity:0;transition:opacity .15s}#croTv:hover .ctv-rs{opacity:1}'
       + '#croTv .ctv-rs.dx{right:0;cursor:nwse-resize;background:linear-gradient(135deg,transparent 0 50%,rgba(203,213,225,.75) 50% 58%,transparent 58% 70%,rgba(203,213,225,.75) 70% 78%,transparent 78%)}'
@@ -12520,19 +12551,31 @@ window.croDom = (function () {
       + '<span class="ctv-op"><input type="range" min="25" max="100" step="5" aria-label="Trasparenza"><span></span></span>'
       + '<button type="button" data-tv="op" title="Trasparenza della finestra">' + ICO.op + '</button>'
       + '<button type="button" data-tv="tutto" title="A tutto schermo">' + ICO.tutto + '</button>'
-      + '<button type="button" data-tv="chiudi" title="Chiudi la TV">' + ICO.chiudi + '</button></div>'
+      + '<button type="button" data-tv="finestra" title="Apri il canale in una finestra a parte">' + ICO.finestra + '</button></div>'
+      + '<button type="button" class="ctv-x" data-tv="chiudi" title="Chiudi la TV" aria-label="Chiudi la TV">' + ICO.chiudi + '</button>'
       + '<div class="ctv-rs sx" title="Ridimensiona"></div><div class="ctv-rs dx" title="Ridimensiona"></div>';
     document.body.appendChild(w); schermo = w.querySelector('.ctv-sch');
     menu = document.createElement('div'); menu.id = 'croTvMenu'; menu.hidden = true; menu.setAttribute('role', 'listbox');
     menu.innerHTML = '<div class="ctv-mq"><input type="text" placeholder="Cerca un canale o una radio…" autocomplete="off"></div><div class="ctv-ml"></div>'
-      + '<div class="ctv-mp">● verde: funziona · ● rosso: non parte (passa sopra per il motivo) · 📺 video · 📻 solo audio</div>';
+      + '<form class="ctv-ag" autocomplete="off"><input type="text" name="l" placeholder="Incolla il link di una diretta YouTube"><input type="text" name="n" placeholder="Nome"><button type="submit">Aggiungi</button><small></small></form>'
+      + '<div class="ctv-mp"><span style="color:#22c55e">\u25CF</span> funziona \u00b7 <span style="color:#3b82f6">\u25CF</span> si apre in una finestra a parte \u00b7 <span style="color:#ef4444">\u25CF</span> non parte (passa sopra per il motivo) \u00b7 \uD83D\uDCFA video \u00b7 \uD83D\uDCFB solo audio</div>';
     document.body.appendChild(menu);
     menu.querySelector('input').addEventListener('input', disegnaMenu);
     menu.querySelector('input').addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { menu.hidden = true; return; }
       if (e.key === 'Enter') { var v = menu.querySelector('.ctv-v:not(.na)'); if (v) v.click(); }
     });
+    menu.querySelector('.ctv-ag').addEventListener('submit', function (e) {
+      e.preventDefault(); var f = e.target, nota = f.querySelector('small'), x = capisciLink(f.l.value);
+      nota.className = ''; nota.textContent = '';
+      if (x.err) { nota.className = 'err'; nota.textContent = x.err.charAt(0).toUpperCase() + x.err.slice(1) + '.'; return; }
+      var L = leggi(CHIAVE_MIEI) || [], nome = f.n.value.trim() || (x.vid ? 'Diretta ' + x.vid : 'Canale ' + x.yt.slice(2, 8));
+      if (L.some(function (m) { return (x.vid && m.vid === x.vid) || (x.yt && m.yt === x.yt); })) { nota.className = 'err'; nota.textContent = 'Questo canale c\u2019\u00e8 gi\u00e0 fra i tuoi.'; return; }
+      var nuovo = { id: 'mio' + Date.now().toString(36), n: nome, yt: x.yt, vid: x.vid }; L.push(nuovo); scrivi(CHIAVE_MIEI, L); rifaiMiei();
+      f.reset(); menu.hidden = true; metti(canale(nuovo.id), true);
+    });
     menu.addEventListener('click', function (e) {
+      var dl = e.target.closest('.del'); if (dl) { e.stopPropagation(); var id = dl.getAttribute('data-del'); scrivi(CHIAVE_MIEI, (leggi(CHIAVE_MIEI) || []).filter(function (m) { return m.id !== id; })); if (cur && cur.id === id) cur = null; rifaiMiei(); disegnaMenu(); return; }
       var v = e.target.closest('.ctv-v'); if (!v) return;
       var c = canale(v.getAttribute('data-id')); if (!c) return;
       if (c.t === 'na') { window.open(c.url, '_blank', 'noopener'); return; }
@@ -12552,7 +12595,10 @@ window.croDom = (function () {
       else if (a === 'chiudi') chiudi();
       else if (a === 'riprova') metti(cur, true);
       else if (a === 'altro') apriMenu();
-      else if (a === 'sito') window.open('https://www.youtube.com/channel/' + cur.yt + '/live', '_blank', 'noopener');
+      else if (a === 'sito' || a === 'finestra') { if (cur && cur.t === 'yt') finestra(cur, true); }
+      else if (a === 'cambialink') { var mm = leggi(CHIAVE_VID) || {}; delete mm[cur.id]; scrivi(CHIAVE_VID, mm); if (pop && !pop.closed) { try { pop.location.href = 'https://www.youtube.com/channel/' + cur.yt + '/live'; } catch (e) {} pop.focus(); messaggioFin(cur, 'serveid'); } else finestra(cur, true); }
+      else if (a === 'davanti') { if (pop && !pop.closed) pop.focus(); else finestra(cur, true); }
+      else if (a === 'chiudifin') { if (pop && !pop.closed) pop.close(); pop = null; messaggioFin(cur, 'chiusa'); }
     });
     trascina(); allarga();
     document.addEventListener('fullscreenchange', function () { var b = w.querySelector('[data-tv="tutto"]'); var fs = document.fullscreenElement === w; b.innerHTML = fs ? ICO.esci : ICO.tutto; b.title = fs ? 'Esci dal tutto schermo' : 'A tutto schermo'; menu.hidden = true; if (!fs && menu.parentNode !== document.body) document.body.appendChild(menu); if (!fs && !w.hidden) posiziona(); });
@@ -12624,17 +12670,18 @@ window.croDom = (function () {
     CANALI.forEach(function (c) {
       if (q && nn(c.n + ' ' + c.g + ' ' + (c.al || []).join(' ')).indexOf(q) < 0) return;
       if (c.g !== g0) { h += '<h5>' + esc(c.g) + '</h5>'; g0 = c.g; }
-      var s = stato[c.id] || {}, cl = 'ctv-v' + (c === cur ? ' att' : '') + (s.ko ? ' ko' : '') + (c.t === 'na' ? ' na ko' : '');
-      var mo = c.t === 'na' ? c.perche + '. Clic: apre il sito' : (s.ko || '');
+      var s = stato[c.id] || {}, cl = 'ctv-v' + (c === cur ? ' att' : '') + (s.ko && !c.fin ? ' ko' : '') + (c.t === 'na' ? ' na ko' : '');
+      var mo = c.t === 'na' ? c.perche + '. Clic: apre il sito' : c.fin ? 'Non si lascia mettere dentro altre pagine: si apre in una finestra a parte' : (s.ko || '');
       h += '<div class="' + cl + '" data-id="' + c.id + '" role="option" title="' + esc(mo || (c.t === 'yt' ? 'Diretta video da YouTube' : 'Radio in solo audio')) + '">'
-        + '<span class="pt' + (s.ok ? ' ok' : s.ko || c.t === 'na' ? ' ko' : '') + '"></span><span>' + esc(c.n) + (s.ko && c.t !== 'na' ? '<span class="mo">' + esc(s.ko) + '</span>' : '') + '</span>'
-        + '<span class="ti">' + (c.t === 'yt' ? '📺' : c.t === 'radio' ? '📻' : '↗') + '</span></div>';
+        + '<span class="pt' + (c.fin ? ' fi' : s.ok ? ' ok' : s.ko || c.t === 'na' ? ' ko' : '') + '"></span><span>' + esc(c.n) + (c.fin ? '<span class="mo">si apre in una finestra a parte</span>' : s.ko && c.t !== 'na' ? '<span class="mo">' + esc(s.ko) + '</span>' : '') + '</span>'
+        + '<span class="ti">' + (c.fin ? '\u29C9' : c.t === 'yt' ? '\uD83D\uDCFA' : c.t === 'radio' ? '\uD83D\uDCFB' : '\u2197') + '</span>' + (c.mio ? '<span class="del" data-del="' + c.id + '" title="Togli dai miei canali">\u2715</span>' : '') + '</div>';
     });
     menu.querySelector('.ctv-ml').innerHTML = h || '<div class="ctv-v ko">Nessun canale con questo nome</div>';
   }
   /* ── riproduzione ───────────────────────────────────────────────────── */
   function ferma() {
     clearTimeout(tPrima); giro++;
+    if (hlsIst) { try { hlsIst.destroy(); } catch (e) {} hlsIst = null; }
     if (audio) { try { audio.pause(); audio.removeAttribute('src'); audio.load(); } catch (e) {} audio = null; }
     schermo.innerHTML = '';
   }
@@ -12652,13 +12699,70 @@ window.croDom = (function () {
     ferma(); cur = c; ui.ch = c.id; salva();
     if (daUtente && c.t === 'radio') muto = false;   /* una radio scelta a mano parte con l'audio */
     titolo();
-    if (c.t === 'yt') video(c); else radio(c);
+    if (c.t === 'yt' && c.fin) finestra(c, daUtente);
+    else { if (pop && !pop.closed) { try { pop.close(); } catch (e) {} } pop = null; if (c.t === 'yt') video(c); else radio(c); }
+  }
+  /* V11.26|189: i canali che non si lasciano incorporare si guardano in una finestra a parte del browser */
+  /* V11.26|190: finestra a parte minimale.
+     Canali che si lasciano incorporare: una finestrella del CRO con solo il player (nessuna pagina di YouTube).
+     Canali con incorporamento negato (fin): il player essenziale di YouTube (watch_popup, solo il video),
+     che vuole l'id della diretta: se non c'e' si apre la pagina della diretta una volta e se ne incolla il link. */
+  var CHIAVE_VID = 'croTvVid';
+  function vidDi(c) { if (c.vid) return c.vid; var m = leggi(CHIAVE_VID) || {}; return m[c.id] || null; }
+  function apriPopup(url, titolo) {
+    var r = w.getBoundingClientRect(), bordo = Math.max(0, (window.outerHeight || 0) - window.innerHeight);
+    var W = Math.max(480, Math.round(r.width)), H = Math.round(W * 9 / 16);
+    var X = Math.round((window.screenX || 0) + r.right - W), Y = Math.round((window.screenY || 0) + bordo + r.bottom - H - 40);
+    var p = null; try { p = window.open(url || '', 'croTvFinestra', 'popup=yes,width=' + W + ',height=' + H + ',left=' + Math.max(0, X) + ',top=' + Math.max(0, Y)); } catch (e) { p = null; }
+    return p;
+  }
+  function paginaMinimale(p, c) {
+    var org = /^https?:/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '';
+    var src = 'https://www.youtube.com/embed/' + (vidDi(c) ? vidDi(c) + '?' : 'live_stream?channel=' + c.yt + '&') + 'autoplay=1&playsinline=1&rel=0&modestbranding=1' + org;
+    var d = p.document; d.open();
+    d.write('<!doctype html><html lang="it"><head><meta charset="utf-8"><title>' + esc(c.n) + ' · CRO TV</title>'
+      + '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{position:fixed;inset:0;width:100%;height:100%;border:0}</style></head>'
+      + '<body><iframe src="' + esc(src) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></body></html>');
+    d.close();
+  }
+  function finestra(c, daUtente) {
+    ferma(); cur = c; titolo();
+    if (daUtente === false) { messaggioFin(c, 'chiusa'); return; }
+    var v = vidDi(c), come = 'aperta';
+    if (!c.fin) { pop = apriPopup('', c); if (pop) { try { paginaMinimale(pop, c); } catch (e) { pop.location.href = 'https://www.youtube.com/channel/' + c.yt + '/live'; } } }
+    else if (v) pop = apriPopup('https://www.youtube.com/watch_popup?v=' + v, c);
+    else { pop = apriPopup('https://www.youtube.com/channel/' + c.yt + '/live', c); come = 'serveid'; }
+    messaggioFin(c, pop ? come : 'bloccata');
+  }
+  function messaggioFin(c, come) {
+    ferma(); if (!c) return;
+    var t = come === 'aperta' ? c.n + ' è in una finestra a parte' : come === 'serveid' ? c.n + ': un passo solo la prima volta' : come === 'bloccata' ? 'Il browser ha bloccato la finestra' : c.n;
+    var x = come === 'bloccata' ? 'Consenti le finestre popup per questo sito (icona nella barra degli indirizzi) e premi Riprova.'
+      : come === 'serveid' ? 'Per la finestra con il solo video serve il link della diretta: copialo dalla barra degli indirizzi della finestra appena aperta (youtube.com/watch?v=…), incollalo qui sotto e premi Salva.'
+      : come === 'aperta' ? 'Solo il video, senza la pagina di YouTube. Per tenerlo sempre davanti, anche fuori dal browser: clic destro due volte sul video e «Picture in picture».' + (c.fin ? ' Se dice che il video non è disponibile, la diretta è ripartita con un altro link: «Cambia link».' : '')
+      : 'Premi «Apri in finestra».';
+    var b = come === 'aperta' ? '<button type="button" class="pri" data-tv="davanti">Porta davanti</button><button type="button" data-tv="chiudifin">Chiudi la finestra</button>' + (c.fin ? '<button type="button" data-tv="cambialink">Cambia link</button>' : '')
+      : come === 'serveid' ? ''
+      : come === 'bloccata' ? '<button type="button" class="pri" data-tv="finestra">Riprova</button>' : '<button type="button" class="pri" data-tv="finestra">Apri in finestra</button>';
+    var m = messaggio(t, x, b + '<button type="button" data-tv="altro">Altro canale</button>');
+    if (come === 'serveid') {
+      m.querySelector('.ctv-az').insertAdjacentHTML('beforebegin', '<form class="ctv-id" autocomplete="off"><input type="text" placeholder="https://www.youtube.com/watch?v=…"><button type="submit" class="pri">Salva</button></form><small class="ctv-iderr"></small>');
+      var f = m.querySelector('.ctv-id');
+      f.addEventListener('submit', function (e) {
+        e.preventDefault(); var x2 = capisciLink(f.querySelector('input').value), er = m.querySelector('.ctv-iderr');
+        if (!x2.vid) { er.textContent = 'Serve il link del video della diretta (youtube.com/watch?v=… oppure youtube.com/live/…).'; return; }
+        var mm = leggi(CHIAVE_VID) || {}; mm[c.id] = x2.vid; scrivi(CHIAVE_VID, mm);
+        if (pop && !pop.closed) { try { pop.location.href = 'https://www.youtube.com/watch_popup?v=' + x2.vid; } catch (e2) {} pop.focus(); messaggioFin(c, 'aperta'); }
+        else finestra(c, true);
+      });
+      setTimeout(function () { try { f.querySelector('input').focus(); } catch (e) {} }, 50);
+    }
   }
   function video(c) {
     var mio = giro; ytOk = false;
     var org = /^https?:/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '';
     var f = document.createElement('iframe');
-    f.src = 'https://www.youtube.com/embed/live_stream?channel=' + c.yt + '&autoplay=1&mute=' + (muto ? 1 : 0) + '&enablejsapi=1&playsinline=1&rel=0&modestbranding=1' + org;
+    f.src = 'https://www.youtube.com/embed/' + (c.vid ? c.vid + '?' : 'live_stream?channel=' + c.yt + '&') + 'autoplay=1&mute=' + (muto ? 1 : 0) + '&enablejsapi=1&playsinline=1&rel=0&modestbranding=1' + org;
     f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.setAttribute('allowfullscreen', ''); f.title = c.n;
     f.referrerPolicy = 'strict-origin-when-cross-origin';
     f.addEventListener('load', function () { if (mio !== giro) return; invia('listening'); invia('command', 'addEventListener', ['onStateChange']); invia('command', 'addEventListener', ['onError']); });
@@ -12670,7 +12774,7 @@ window.croDom = (function () {
   }
   function messaggioSopra(t, x) {
     if (schermo.querySelector('.ctv-msg')) return;
-    var m = messaggio(t, x, '<button type="button" data-tv="riprova">Riprova</button><button type="button" data-tv="altro">Altro canale</button>' + (cur && cur.yt ? '<button type="button" data-tv="sito">Apri su YouTube</button>' : ''));
+    var m = messaggio(t, x, (cur && cur.t === 'yt' ? '<button type="button" class="pri" data-tv="finestra">Apri in finestra</button>' : '') + '<button type="button" data-tv="riprova">Riprova</button><button type="button" data-tv="altro">Altro canale</button>');
     m.style.background = 'rgba(2,6,23,.82)';
   }
   function invia(ev, func, args) {
@@ -12690,7 +12794,7 @@ window.croDom = (function () {
   }
   function audioSuGiu(accendi) {
     muto = !accendi; titolo();
-    if (!cur) return;
+    if (!cur || cur.fin) return;   /* nella finestra a parte l'audio lo regola YouTube */
     if (cur.t === 'yt') {
       if (ytOk) { invia('command', accendi ? 'unMute' : 'mute'); if (accendi) invia('command', 'setVolume', [100]); }
       else metti(cur);   /* senza risposta dal player si ricarica con l'audio scelto */
@@ -12704,25 +12808,40 @@ window.croDom = (function () {
   function cercaFlussi(c) {
     var cache = leggi(CHIAVE_R) || {}, k = cache[c.id];
     if (k && Date.now() - k.ts < 7 * 864e5 && k.url && k.url.length) return Promise.resolve(k.url);
-    var https = location.protocol === 'https:', i = 0;
-    var qs = '/json/stations/search?name=' + encodeURIComponent(c.q) + '&countrycode=' + (c.cc || 'IT') + '&hidebroken=true&order=clickcount&reverse=true&limit=25';
-    function prova() {
+    var https = location.protocol === 'https:', nomi = [].concat(c.q || c.n);
+    function prova(qs, i) {
       if (i >= SERVER.length) return Promise.reject(new Error('archivio delle radio non raggiungibile da questa rete'));
-      var u = 'https://' + SERVER[i++] + qs;
-      return fetch(u, { headers: { 'Accept': 'application/json' } }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).catch(function () { return prova(); });
+      return fetch('https://' + SERVER[i] + qs, { headers: { 'Accept': 'application/json' } }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).catch(function () { return prova(qs, i + 1); });
     }
-    return prova().then(function (L) {
-      var nq = nn(c.q), nnm = nn(c.n);
-      var buoni = (L || []).filter(function (s) { var u = s.url_resolved || s.url || ''; return s.lastcheckok !== 0 && u && (!https || /^https:/.test(u)) && !/\.(m3u|pls)(\?|$)/i.test(u); });
-      buoni.sort(function (a, b) {
-        var p = function (s) { var x = nn(s.name); return x === nq || x === nnm ? 0 : x.indexOf(nq) === 0 ? 1 : x.indexOf(nq) >= 0 ? 2 : 3; };
+    return Promise.all(nomi.map(function (q) {
+      return prova('/json/stations/search?name=' + encodeURIComponent(q) + '&countrycode=' + (c.cc || 'IT') + '&hidebroken=true&order=clickcount&reverse=true&limit=30', 0).catch(function (e) { return { err: e }; });
+    })).then(function (RR) {
+      var tutte = [], visti = {};
+      RR.forEach(function (L) { if (Array.isArray(L)) L.forEach(function (s) { if (!visti[s.stationuuid]) { visti[s.stationuuid] = 1; tutte.push(s); } }); });
+      if (!tutte.length && RR.every(function (L) { return L && L.err; })) throw RR[0].err;
+      var chiavi = nomi.map(nn).concat(nn(c.n));
+      var giuste = tutte.filter(function (s) { var x = nn(s.name); return s.lastcheckok !== 0 && (s.url_resolved || s.url) && !/\.(m3u|pls|asx)(\?|$)/i.test(s.url_resolved || s.url) && chiavi.some(function (q) { return x.indexOf(q) >= 0; }); });
+      giuste.sort(function (a, b) {
+        var p = function (s) { var x = nn(s.name); return chiavi.indexOf(x) >= 0 ? 0 : chiavi.some(function (q) { return x.indexOf(q) === 0; }) ? 1 : 2; };
         return p(a) - p(b) || (b.clickcount || 0) - (a.clickcount || 0);
       });
-      buoni = buoni.filter(function (s) { return nn(s.name).indexOf(nq) >= 0 || nn(s.name).indexOf(nnm) >= 0; });
-      var urls = buoni.slice(0, 4).map(function (s) { return s.url_resolved || s.url; });
-      if (!urls.length) throw new Error(https ? 'nessun flusso sicuro (https) trovato per questa radio' : 'nessun flusso trovato per questa radio');
+      /* V11.26|189: dal sito in https il browser rifiuta i flussi http; si prova la stessa sorgente in https, poi i flussi HLS (.m3u8) */
+      var urls = [], spinti = [];
+      giuste.forEach(function (s) {
+        var u = s.url_resolved || s.url;
+        if (!https || /^https:/i.test(u)) urls.push(u); else spinti.push(u.replace(/^http:/i, 'https:'));
+      });
+      urls = urls.concat(spinti).filter(function (u, i, A) { return A.indexOf(u) === i; }).slice(0, 6);
+      if (!urls.length) throw new Error('nessun flusso trovato per questa radio');
       cache[c.id] = { url: urls, ts: Date.now() }; scrivi(CHIAVE_R, cache); return urls;
     });
+  }
+  /* HLS: Safari lo suona da solo, Chrome ed Edge con hls.js caricato solo quando serve */
+  var HLS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.20/hls.min.js', hlsCarica = null, hlsIst = null;
+  function caricaHls() {
+    if (window.Hls) return Promise.resolve(window.Hls);
+    if (!hlsCarica) hlsCarica = new Promise(function (ok, no) { var sc = document.createElement('script'); sc.src = HLS_URL; sc.onload = function () { window.Hls ? ok(window.Hls) : no(new Error('hls.js')); }; sc.onerror = function () { hlsCarica = null; no(new Error('libreria HLS non raggiungibile')); }; document.head.appendChild(sc); });
+    return hlsCarica;
   }
   function radio(c) {
     var mio = giro;
@@ -12734,7 +12853,21 @@ window.croDom = (function () {
       function suona() {
         if (mio !== giro) return;
         if (j >= urls.length) { var cache = leggi(CHIAVE_R) || {}; delete cache[c.id]; scrivi(CHIAVE_R, cache); fallita('nessuno dei flussi trovati risponde'); return; }
-        var u = urls[j++]; audio = new Audio(); audio.preload = 'none'; audio.muted = muto; audio.src = u;
+        var u = urls[j++]; audio = new Audio(); audio.preload = 'none'; audio.muted = muto;
+        if (hlsIst) { try { hlsIst.destroy(); } catch (e) {} hlsIst = null; }
+        if (/\.m3u8(\?|$)/i.test(u) && !audio.canPlayType('application/vnd.apple.mpegurl')) {
+          var a0 = audio;
+          caricaHls().then(function (Hls) {
+            if (mio !== giro || a0 !== audio) return;
+            if (!Hls.isSupported()) { suona(); return; }
+            hlsIst = new Hls(); hlsIst.loadSource(u); hlsIst.attachMedia(a0);
+            hlsIst.on(Hls.Events.ERROR, function (ev, d) { if (d && d.fatal && mio === giro && a0 === audio) suona(); });
+            a0.addEventListener('playing', function () { if (mio !== giro) return; segna(c, null); d.querySelector('span').textContent = c.g + ' \u00b7 solo audio' + (muto ? ' \u00b7 audio spento' : ''); d.querySelector('.ctv-eq').classList.toggle('ferma', muto); });
+            a0.play().catch(function () {});
+          }).catch(function () { if (mio === giro) suona(); });
+          return;
+        }
+        audio.src = u;
         audio.addEventListener('playing', function () { if (mio !== giro) return; segna(c, null); d.querySelector('span').textContent = c.g + ' · solo audio' + (muto ? ' · audio spento' : ''); d.querySelector('.ctv-eq').classList.toggle('ferma', muto); });
         audio.addEventListener('error', function () { if (mio === giro) suona(); });
         audio.play().catch(function (er) {
@@ -12747,18 +12880,19 @@ window.croDom = (function () {
     function fallita(m) { segna(c, m); d.querySelector('b').textContent = c.n + ' non parte'; d.querySelector('span').textContent = m.charAt(0).toUpperCase() + m.slice(1) + '.'; d.querySelector('.ctv-eq').remove(); d.insertAdjacentHTML('beforeend', '<div class="ctv-az"><button type="button" data-tv="riprova">Riprova</button><button type="button" data-tv="altro">Altro canale</button></div>'); }
   }
   /* ── apertura e chiusura ───────────────────────────────────────────── */
-  function bottone() { var b = document.querySelector('#croInfoLive [data-cil="tv"]'); if (b) { b.classList.toggle('cil-attivo', !!(w && !w.hidden)); b.title = w && !w.hidden ? 'Chiudi la TV' : 'TV e radio in una finestrella (Sky TG24 senza audio)'; } }
+  function bottone() { var b = document.querySelector('#croInfoLive [data-cil="tv"]'); if (b) { b.classList.toggle('cil-attivo', !!(w && !w.hidden)); b.title = w && !w.hidden ? 'Chiudi la TV' : 'TV e radio in una finestrella: Sky TG24, Euronews, radio italiane'; } }
   function apri(id) {
     costruisci();
     var c = (id && (canale(id) || trova(id))) || (w.hidden ? canale(ui.ch) : cur) || canale(PARTENZA);
     if (c && c.t === 'na') { window.open(c.url, '_blank', 'noopener'); return c; }
     if (w.hidden) { muto = true; w.hidden = false; posiziona(); opacita(); }
-    if (c !== cur || !schermo.firstChild) metti(c, !!id && c.t === 'radio');
+    if (c !== cur || !schermo.firstChild) metti(c, (!!id && c.t === 'radio') || c.fin ? true : false);
     bottone(); return c;
   }
   function chiudi() {
     if (!w) return; if (document.fullscreenElement === w) document.exitFullscreen();
     ferma(); cur = null; w.hidden = true; menu.hidden = true; bottone();
+    if (pop && !pop.closed) { try { pop.close(); } catch (e) {} } pop = null;
   }
   function trova(t) {
     var q = nn(t); if (q.length < 2) return null;
@@ -32428,7 +32562,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
   <span class="dark-mode-icon" id="darkModeIcon">🌙</span>
 </button>
 
-<div class="version-tag">V11.26 | 188 | Nov 2026</div>
+<div class="version-tag">V11.26 | 190 | Nov 2026</div>
       </div>
     </div>
   </header>
@@ -32729,7 +32863,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #0066cc;">Cosa è cambiato nei database</h3>
-                        <span class="feature-badge" style="background: #eff6ff; color: #1d4ed8;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #eff6ff; color: #1d4ed8;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Nella home, sotto l’intestazione, un riquadro con le differenze tra l’ultimo aggiornamento dei DB RC e RA e quello precedente: subpath diventati attivi o non attivi, nuovi, tolti, con distanza o altri campi cambiati (C-FOS, centrali, tipo sede, coordinate e gli altri campi che cambiano i risultati). Si aggiorna a ogni aggiornamento dei DB; un clic su un subpath apre la sua scheda nell’Assistente CRO. Accanto al titolo l’età del DB, con un avviso oltre i 30 giorni.</p>
                     <div class="feature-specs">
@@ -32746,7 +32880,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #0066cc;">Assistente CRO</h3>
-                        <span class="feature-badge" style="background: #eff6ff; color: #1d4ed8;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #eff6ff; color: #1d4ed8;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Dal <strong>robottino bianco perlato</strong> nella barra dei tab, sotto la revisione (ogni tanto gioca; al passaggio del mouse saluta), una chat locale che cerca nei dati e nei testi del tool. Finestra spostabile e riducibile, che ricorda dove la lasci. Scrivi un <strong>CLLI</strong> e mostra in tre parti la centrale, i collegamenti che partono o arrivano lì e quelli per cui è una centrale di transito (con i cavi C-FOS); un <strong>subpath</strong>, un arco o un ramo e mostra la scheda completa con C-FOS, OTS, stato e note NNI; una <strong>C-FOS</strong> e dice quali subpath la usano; una <strong>centrale</strong> o una <strong>sigla</strong> della legenda. Per tutto il resto cerca nei testi di tutti i tab, con «Vai al punto». Capisce anche domande guidate: <em>non attivi Lombardia</em>, <em>data center Piemonte</em>, due CLLI (collegamenti diretti), due subpath (C-FOS in comune), <em>novità</em> dei DB, <em>Nodi A1 vicini a</em> una centrale. Ricorda la centrale di cui parli (dopo puoi chiedere «e i Nodi A1 vicini?» o «i collegamenti?») e con <strong>«Imposta una pratica»</strong> ti guida passo passo (tipo, centrali, Nodo A1, capacità) fino al piano con tab, controlli, coda e foglio IRP, e apre il tab Unificato con le centrali già scritte. Sotto ogni risposta <strong>«🤖 Chiedi a Claude»</strong> prepara una domanda con i dati del tool e apre claude.ai: la incolli e decidi tu se inviarla. La conversazione si esporta in <strong>TXT</strong>, impaginato come gli export dei tab di ricerca, e in <strong>Word</strong>. Non è un’intelligenza artificiale, non calcola percorsi né costi, non manda dati fuori dal PC: i limiti sono scritti nella chat, e i link di ricerca su internet sono segnati come non verificati.</p>
                     <div class="feature-specs">
@@ -32767,7 +32901,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #b91c1c;">Info live</h3>
-                        <span class="feature-badge" style="background: #fef2f2; color: #b91c1c;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #fef2f2; color: #b91c1c;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Striscia scorrevole in fondo alla finestra con <strong>meteo</strong> di 15 città, <strong>cambi</strong> e cripto e le <strong>notizie</strong> di quasi novanta fonti (ANSA, Rai, TGcom24, Fanpage, quotidiani, testate TLC, IA e sport, Bing News, Hacker News, Wikipedia…), con il logo del sito e la categoria; prima le più attinenti (fibra, DWDM, TLC, IA), le inglesi tradotte. Le notizie non spariscono mentre le leggi, lo scorrimento non si blocca mentre lavori e il tool dà sempre la precedenza alle ricerche. Pannello <strong>ⓘ Fonti</strong> a colonne, per gruppi, con stato, voci, date e aggiornamento mirato.</p>
                     <div class="feature-specs">
@@ -32787,7 +32921,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                         <h3 class="feature-title" style="color: #b91c1c;">TV e radio</h3>
                         <span class="feature-badge" style="background: #fef2f2; color: #b91c1c;">Dalla revisione 188</span>
                     </div>
-                    <p class="feature-desc">Finestrella sopra la striscia Info live con <strong>Sky TG24</strong> senza audio e altre 12 dirette video da YouTube, più <strong>24 radio</strong> in solo audio, divise per genere. Si sposta, si ridimensiona, va a tutto schermo e ha la trasparenza regolabile. Si accende dal bottone «📺 TV», da Ctrl+K o dall’Assistente.</p>
+                    <p class="feature-desc">Finestrella sopra la striscia Info live con <strong>Sky TG24</strong> e altre dirette video italiane da YouTube, più <strong>23 radio</strong> in solo audio, divise per genere. Si sposta, si ridimensiona, va a tutto schermo e ha la trasparenza regolabile. I canali che non si lasciano incorporare si aprono in una finestra a parte; con «Aggiungi» incolli il link di altre dirette. Si accende dal bottone «📺 TV», da Ctrl+K o dall’Assistente.</p>
                     <div class="feature-specs">
                         <span class="spec-tag" style="background: #fef2f2; color: #b91c1c;">Sky TG24</span>
                         <span class="spec-tag" style="background: #fef2f2; color: #b91c1c;">Radio</span>
@@ -32803,7 +32937,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #7c3aed;">Moduli ottici</h3>
-                        <span class="feature-badge" style="background: #f5f3ff; color: #6d28d9;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #f5f3ff; color: #6d28d9;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Tabella di riferimento dei moduli <strong>SFP, SFP+ e QSFP28</strong> a 1G, 10G e 100G con portata, lunghezze d’onda, norma (IEEE o specifiche dei produttori) ed esempi di codice Cisco. L’<strong>Assistente CRO</strong> risponde a domande come «modulo 100G per 2 km», «LR4» o «ER4 Lite» e propone il modulo con la portata giusta; la tabella completa è nella Guida.</p>
                     <div class="feature-specs">
@@ -32837,7 +32971,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #16a34a;">Trova Nodi A1</h3>
-                        <span class="feature-badge" style="background: #f0fdf4; color: #15803d;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #f0fdf4; color: #15803d;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Nella <strong>Posizione Cliente</strong> dei tab RA, RC e Unificato scrivi il CLLI o il nome di una centrale in «CLLI o Nome Centrale» e premi <strong>🏢 Trova Nodi A1</strong>: il popup mostra i Nodi A1 più vicini con distanza in linea d’aria, km di rete del tab e tipo (A1 Standard o A1_DIV senza PE). Prima i Nodi A1 della stessa regione, poi le alternative delle altre regioni, ognuno per distanza, con Area, Zona e Regione dal DB; «via RTN» se si raggiungono solo con la dorsale. Un clic li mette in <strong>Arrivo</strong>, in <strong>Arrivo 2</strong> o in tutti e due, con i bottoni Arrivo Std e Arrivo Div (su due Nodi diversi), la centrale cercata va in <strong>Partenza</strong> e il popup resta aperto fino a «Fatto». Nel tab RA si possono usare solo i Nodi A1 che nella rete RA sono di Tipo 1.</p>
                     <div class="feature-specs">
@@ -32853,7 +32987,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                     </div>
                     <div class="feature-header">
                         <h3 class="feature-title" style="color: #10b981;">Analisi per Soluzioni Protette</h3>
-                        <span class="feature-badge" style="background: #ecfdf5; color: #047857;">Nuovo V11.26 | 188</span>
+                        <span class="feature-badge" style="background: #ecfdf5; color: #047857;">Nuovo V11.26 | 190</span>
                     </div>
                     <p class="feature-desc">Tab <strong>Analisi per Soluzioni Protette</strong> (menu Analisi Extra, 🚧 in lavorazione). Il <strong>calcolatore</strong> dice se un collegamento protetto va <strong>per sezioni (SNCP, «a caramella»)</strong> o <strong>E2E</strong> secondo la em@il di Leonardo (senza RTN: 1G per sezioni, 10G E2E; con RTN: 2 nodi per sezioni, 4 nodi E2E), con costi a listino e avvisi della presentazione Lambdawave. Lo <strong>schema tecnico</strong> segue la scelta; <strong>Come funziona</strong> disegna tutte le soluzioni e spiega il routing tappa per tappa in andata e ritorno, la protezione, le schede e i guasti; poi configurazioni di riferimento, confronto e una <strong>legenda</strong> di 66 voci verificate. Sezioni comprimibili, finestra dei disegni trascinabile, export JPG e Word.</p>
                     <div class="feature-specs">
@@ -33317,7 +33451,7 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
   </div>
   <div class="feature-header">
     <h3 class="feature-title" style="color: #0066CC;">📊 Migliori percorsi e podio dei Div</h3>
-    <span class="feature-badge" style="background:#eff6ff;color:#0066CC;">Nuovo V11.26 | 188</span>
+    <span class="feature-badge" style="background:#eff6ff;color:#0066CC;">Nuovo V11.26 | 190</span>
   </div>
   <p class="feature-desc">Nei tab RC e Unificato, dopo ogni ricerca, i <strong>tre percorsi Std migliori</strong> prendono un nastro oro, argento e bronzo sopra la riga e una card nel pannello <strong>📊 Analisi Percorsi</strong> (distanza, collegamenti, subpath, centrali, cambi rete, attivi e non attivi; gli zeri si leggono «0»). Il punteggio pesa i passaggi RA↔RC (dove servono i transponder), i collegamenti non attivi, il numero di collegamenti e la distanza; più tratti RA di fila non contano come passaggio. Quando apri i <strong>Div</strong> di uno Std, anche i tre Div migliori prendono il nastro e in cima c’è la riga «🏅 Podio Div»: per i Div conta prima la diversità (meno C-FOS, poi meno CLLI in comune con lo Std), poi i km, poi lo stato. L’ordine dell’elenco resta per distanza.</p>
   <div class="feature-specs">
@@ -33467,8 +33601,28 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
             <div class="cl-list">
               <details class="cl-item" open style="--cl-accent: #b91c1c;">
                 <summary class="cl-sum">
-                  <span class="cl-ver">📺 Novità V11.26 | 188 | Nov 2026</span>
+                  <span class="cl-ver">⧉ Novità V11.26 | 190 | Nov 2026</span>
                   <span class="cl-badge">Nuovo</span>
+                </summary>
+                <div class="cl-body">
+                  <ul style="margin:0.5rem 0 0.5rem 1rem; padding:0; font-size:0.82rem; color:var(--gray-700); line-height:1.7;">
+    <li><strong>⧉ Finestra a parte con il solo video</strong>: niente più pagina completa di YouTube. Per Euronews e gli altri canali incorporabili si apre una finestrella 16:9 con dentro solo il player. Per Sky TG24, Radio Italia (video) e Lofi Girl si usa il player essenziale di YouTube, che vuole il link della diretta: la prima volta si apre la pagina, ne copi l’indirizzo e lo incolli nella finestrella del CRO con «Salva»; dopo si apre subito solo il video. «Cambia link» serve quando la diretta riparte con un indirizzo nuovo. La sottile barra dell’indirizzo in alto la impone il browser e non si può togliere</li>
+                  </ul>
+                </div>
+              </details>
+              <details class="cl-item" style="--cl-accent: #b91c1c;">
+                <summary class="cl-sum">
+                  <span class="cl-ver">⧉ Novità V11.26 | 189 | Nov 2026</span>
+                </summary>
+                <div class="cl-body">
+                  <ul style="margin:0.5rem 0 0.5rem 1rem; padding:0; font-size:0.82rem; color:var(--gray-700); line-height:1.7;">
+    <li><strong>🇮🇹 Solo canali italiani</strong>: tolti Sky News, Al Jazeera English, DW News, France 24 inglese e francese, Euronews English, Bloomberg, NASA e la radio BBC World Service</li><li><strong>⧉ Sky TG24 in una finestra a parte</strong>: Sky TG24, Radio Italia (video) e Lofi Girl non permettono di vedere la diretta dentro altre pagine; il CRO le apre in una piccola finestra del browser con la pagina YouTube della diretta (pallino blu nell’elenco). Da lì, clic destro due volte sul video e «Picture in picture» per tenerla sempre davanti. Lo stesso bottone «Apri in finestra» c’è nella barra e compare per ogni canale che non parte</li><li><strong>✕ Chiusura sempre visibile</strong>: in alto a destra della finestrella, anche senza passarci sopra; la barra non va più oltre il bordo quando apri la trasparenza</li><li><strong>➕ I miei canali</strong>: in fondo all’elenco incolli il link di una diretta YouTube, dai un nome e la provi subito. Serve anche per RTL 102.5, quando il canale mostra «In attesa» di una diretta programmata</li><li><strong>📻 Radio rosse recuperate</strong>: la ricerca prova più nomi (Rai Radio 2 / Radio2), richiama in https i flussi http e suona anche i flussi HLS</li>
+                  </ul>
+                </div>
+              </details>
+              <details class="cl-item" style="--cl-accent: #b91c1c;">
+                <summary class="cl-sum">
+                  <span class="cl-ver">📺 Novità V11.26 | 188 | Nov 2026</span>
                 </summary>
                 <div class="cl-body">
                   <ul style="margin:0.5rem 0 0.5rem 1rem; padding:0; font-size:0.82rem; color:var(--gray-700); line-height:1.7;">
@@ -51736,11 +51890,13 @@ body.dark-mode #tab-docs pre[style*="background: #1f2937"] {
                   📺 TV e radio
                 </summary>
                 <div style="margin-top:0.6rem;padding-left:1rem;display:flex;flex-direction:column;gap:0.5rem;font-size:0.88rem;">
-                  <p><strong>Come si accende.</strong> Con il bottone «📺 TV» a sinistra dei comandi della striscia Info live (un secondo clic la spegne), con Ctrl+K scrivendo «tv», «radio» o il nome di un canale, oppure nell’Assistente: <em>tv</em>, <em>sky tg24</em>, <em>metti radio 24</em>, <em>ascolta rtl 102.5</em>, <em>spegni la tv</em>. La prima volta parte Sky TG24 senza audio; le volte dopo riparte l’ultimo canale guardato, sempre senza audio.</p>
-                  <p><strong>La finestrella.</strong> Sta sopra la striscia Info live, in basso a destra, e resta 16:9. Passando sopra con il mouse compare la barra in alto: nome e genere del canale, ◀ canale precedente, ☰ elenco di tutti i canali per genere (con una casella per cercare), ▶ canale successivo, altoparlante per l’audio, cerchio per la trasparenza (da 25% a 100%), tutto schermo e chiusura. Si sposta trascinando la barra e si allarga o si stringe dagli angoli in basso a destra e a sinistra. Posizione, larghezza, trasparenza e ultimo canale restano anche alle aperture successive. Sui tablet la barra resta sempre visibile.</p>
-                  <p><strong>I canali.</strong> Dirette video da YouTube: Sky TG24 ed Euronews Italiano; Sky News, Al Jazeera English, DW News, France 24 (inglese e francese), Euronews English; Bloomberg; RTL 102.5 e Radio Italia in video, Lofi Girl; NASA. Radio in solo audio: Radio 24, Rai Radio 1, GR Parlamento, Radio Radicale, Isoradio; Rai Radio 2, RTL 102.5, RDS, Radio Deejay, Radio 105, Virgin Radio, R101, Radio Kiss Kiss, m2o, Radio Capital, Radio Monte Carlo, Radio Subasio, Radio Freccia, Radio Zeta, Radio Italia; Rai Radio 3 e Radio Classica; Radio Sportiva; BBC World Service. Rai, Mediaset, La7 e TV8/Cielo non permettono di mettere le dirette dentro altre pagine: sono in fondo all’elenco e si aprono nel loro sito.</p>
-                  <p><strong>Controllo automatico.</strong> Ogni canale che apri viene controllato: pallino verde se parte, rosso con il motivo se no (nessuna diretta in onda, incorporamento negato, flusso radio che non risponde). Un canale rosso si può riprovare; il segno rosso dura 6 ore.</p>
-                  <p><strong>Radio.</strong> Il file non contiene indirizzi di flussi: alla prima scelta il tool cerca la radio per nome nell’archivio pubblico radio-browser.info, prende i flussi controllati di recente e più ascoltati, e li ricorda per 7 giorni. Se il primo flusso non risponde prova i successivi. Dal sito in https si usano solo flussi https.</p>
+                  <p><strong>Come si accende.</strong> Con il bottone «📺 TV» a sinistra dei comandi della striscia Info live (un secondo clic la spegne), con Ctrl+K scrivendo «tv», «radio» o il nome di un canale, oppure nell’Assistente: <em>tv</em>, <em>sky tg24</em>, <em>metti radio 24</em>, <em>ascolta rtl 102.5</em>, <em>spegni la tv</em>. La prima volta parte Sky TG24; le volte dopo riparte l’ultimo canale scelto, senza audio se si vede dentro il CRO.</p>
+                  <p><strong>La finestrella.</strong> Sta sopra la striscia Info live, in basso a destra, e resta 16:9. La ✕ in alto a destra la chiude ed è sempre visibile. Passando sopra con il mouse compare la barra: nome e genere del canale, ◀ canale precedente, ☰ elenco di tutti i canali per genere (con una casella per cercare), ▶ canale successivo, altoparlante, cerchio per la trasparenza (da 25% a 100%), tutto schermo e ⧉ «Apri in una finestra a parte». Si sposta trascinando la barra e si allarga o si stringe dagli angoli in basso a destra e a sinistra. Posizione, larghezza, trasparenza e ultimo canale restano anche alle aperture successive. Sui tablet la barra resta sempre visibile.</p>
+                  <p><strong>Finestra a parte, solo il video (pallino blu).</strong> Sky TG24, Radio Italia (video) e Lofi Girl non permettono a YouTube di mostrare la diretta dentro altre pagine: è una scelta del proprietario del canale e vale per qualsiasi sito. Il CRO li apre in una piccola finestra 16:9 del browser, vicino alla finestrella, con il player essenziale di YouTube: solo il video, senza menu, ricerca e commenti. Quel player vuole il link della diretta: la prima volta si apre la pagina della diretta, ne copi l’indirizzo (youtube.com/watch?v=…) e lo incolli nella finestrella del CRO con «Salva»; dalle volte dopo si apre subito solo il video. Se la diretta riparte con un altro link e il video risulta non disponibile, «Cambia link» rifà il passo. Per tutti gli altri canali, «⧉ Apri in finestra» apre una finestrella del CRO con dentro solo il player. In ogni caso il browser mostra in alto una sottile barra con l’indirizzo: nelle finestre aperte da una pagina non si può togliere. Per tenerla sempre davanti, anche fuori dal browser: clic destro due volte sul video e «Picture in picture». Se non si apre niente, consenti i popup per il sito dall’icona nella barra degli indirizzi.</p>
+                  <p><strong>I canali.</strong> Solo in italiano. Dirette video da YouTube: Sky TG24 ed Euronews Italiano; RTL 102.5 e Radio Italia in video, Lofi Girl. Radio in solo audio: Radio 24, Rai Radio 1, GR Parlamento, Radio Radicale, Isoradio; Rai Radio 2, RTL 102.5, RDS, Radio Deejay, Radio 105, Virgin Radio, R101, Radio Kiss Kiss, m2o, Radio Capital, Radio Monte Carlo, Radio Subasio, Radio Freccia, Radio Zeta, Radio Italia; Rai Radio 3 e Radio Classica; Radio Sportiva. Rai, Mediaset, La7 e TV8/Cielo sono in fondo all’elenco e si aprono nel loro sito.</p>
+                  <p><strong>I miei canali.</strong> In fondo all’elenco dei canali incolli il link di una diretta YouTube (youtube.com/watch?v=…, youtube.com/live/…, youtu.be/…) o di un canale (youtube.com/channel/UC…), scrivi un nome e premi «Aggiungi»: il canale entra nel gruppo «I miei canali» e parte subito, così vedi se è verde. Il link con @nome non basta, perché non dice quale diretta. La ✕ accanto al nome lo toglie. Restano solo in questo browser. Serve anche per RTL 102.5: il collegamento al canale a volte prende una diretta programmata («In attesa…») invece di quella continua; incollando il link della diretta 24 ore si vede quella.</p>
+                  <p><strong>Controllo automatico.</strong> Ogni canale che apri viene controllato: pallino verde se parte, rosso con il motivo se no (nessuna diretta in onda, flusso radio che non risponde). Un canale rosso si può riprovare; il segno rosso dura 6 ore.</p>
+                  <p><strong>Radio.</strong> Il file non contiene indirizzi di flussi: alla prima scelta il tool cerca la radio, anche con più nomi (per esempio «Rai Radio 2» e «Radio2»), nell’archivio pubblico radio-browser.info, prende i flussi controllati di recente e più ascoltati e li ricorda per 7 giorni. Dal sito in https il browser rifiuta i flussi http: prima si provano quelli https, poi la stessa sorgente chiamata in https. I flussi HLS (.m3u8, spesso quelli ufficiali Rai) Safari li suona da solo; su Chrome ed Edge il tool carica quando serve la libreria hls.js da cdnjs. Se un flusso non risponde si passa al successivo.</p>
                   <p><strong>Limiti.</strong> Serve internet. Le dirette YouTube vanno solo quando il canale è in onda. Aperto come file dal PC, YouTube a volte rifiuta il video (errore 153, manca il sito di provenienza): dal sito o dal NAS funziona, le radio vanno anche da file. Una rete aziendale può bloccare YouTube o l’archivio delle radio: in quel caso i canali diventano rossi con il motivo.</p>
                 </div>
               </details>
@@ -53893,7 +54049,7 @@ polyline.bindPopup('Percorso ROMA-FIRENZE');</code></pre>
 <section id="docs-v112" style="margin-top:2rem; scroll-margin-top: 90px;">
   <div class="db-card">
     <div class="db-header">
-      <h3 class="db-title">🧾 Changelog – ultime revisioni (V11.26 | 188 | Nov 2026 → V16.31)</h3>
+      <h3 class="db-title">🧾 Changelog – ultime revisioni (V11.26 | 190 | Nov 2026 → V16.31)</h3>
       <p class="db-subtitle">
         Sintesi delle modifiche più recenti (focus su Analisi Costi Nord Ovest, Export Unificato, Analisi Fattibilità)
       </p>
@@ -53912,6 +54068,28 @@ polyline.bindPopup('Percorso ROMA-FIRENZE');</code></pre>
       <div style="display:flex;flex-direction:column;gap:0.75rem;">
 
         <details open style="border:1px solid #b91c1c;border-radius:12px;overflow:hidden;background:#fef2f2;">
+          <summary style="cursor:pointer;padding:0.75rem 1rem;font-weight:700;font-size:0.88rem;color:#991b1b;display:flex;align-items:center;gap:0.5rem;background:#fee2e2;">
+            ⧉ V11.26 | 190 | Nov 2026 | Finestra con il solo video
+          </summary>
+          <div style="padding:0.75rem 1rem;font-size:0.82rem;color:#374151;">
+            <ul style="margin:0.25rem 0 0.25rem 1rem;padding:0;line-height:1.7;">
+              <li><strong>⧉ 190</strong>: <code>finestra()</code> riscritta: <code>apriPopup()</code> 16:9; per i canali incorporabili <code>paginaMinimale()</code> scrive nel popup <code>about:blank</code> una pagina con il solo iframe <code>embed</code>; per i <code>fin</code> <code>youtube.com/watch_popup?v=</code> con l’id da <code>vidDi()</code> (<code>c.vid</code> o <code>localStorage.croTvVid</code>), altrimenti pagina <code>/channel/…/live</code> e form <code>.ctv-id</code> per incollare il link; bottone <code>cambialink</code>. Segnalazione di Giuseppe</li>
+            </ul>
+          </div>
+        </details>
+
+        <details style="border:1px solid #b91c1c;border-radius:12px;overflow:hidden;background:#fef2f2;">
+          <summary style="cursor:pointer;padding:0.75rem 1rem;font-weight:700;font-size:0.88rem;color:#991b1b;display:flex;align-items:center;gap:0.5rem;background:#fee2e2;">
+            ⧉ V11.26 | 189 | Nov 2026 | TV italiana e finestra a parte
+          </summary>
+          <div style="padding:0.75rem 1rem;font-size:0.82rem;color:#374151;">
+            <ul style="margin:0.25rem 0 0.25rem 1rem;padding:0;line-height:1.7;">
+              <li><strong>⧉ 189</strong>: <code>CANALI</code> solo italiani; campo <code>fin</code> per i canali con incorporamento negato: <code>finestra()</code> apre <code>window.open(linkYt(c), 'croTvFinestra', 'popup=yes,…')</code> vicino a <code>#croTv</code>, <code>messaggioFin()</code> con Porta davanti / Chiudi la finestra; bottone <code>data-tv="finestra"</code> nella barra; <code>.ctv-x</code> fuori dalla barra, sempre visibile. Canali utente in <code>localStorage.croTvMiei</code> (<code>capisciLink()</code>: <code>watch?v=</code>, <code>/live/</code>, <code>youtu.be</code>, <code>/embed/</code>, <code>/channel/UC…</code>), embed per video con <code>embed/ID</code>. Radio: <code>q</code> come elenco di nomi, unione dei risultati, http → https, HLS con hls.js 1.5.20 da cdnjs caricato a richiesta. Cache <code>croTvKo</code> e <code>croTvRadio</code> azzerate una volta (<code>croTvVer=189</code>). Richiesta di Giuseppe</li>
+            </ul>
+          </div>
+        </details>
+
+        <details style="border:1px solid #b91c1c;border-radius:12px;overflow:hidden;background:#fef2f2;">
           <summary style="cursor:pointer;padding:0.75rem 1rem;font-weight:700;font-size:0.88rem;color:#991b1b;display:flex;align-items:center;gap:0.5rem;background:#fee2e2;">
             📺 V11.26 | 188 | Nov 2026 | TV e radio
           </summary>
@@ -110515,7 +110693,7 @@ div[style*="background:#f3f4f6"] label {
     ['oltre 100 km', 100, 1e9]
   ];
 
-  var REVISIONE = 'V11.26 | 188';
+  var REVISIONE = 'V11.26 | 190';
 
   function t(v) { return String(v == null ? '' : v).trim(); }
 
